@@ -1,0 +1,46 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install PyYAML
+        run: python -m pip install --disable-pip-version-check pyyaml
+      - name: Validate lock file consistency
+        run: python tools/build_lock.py --check
+      - name: Repository selftest
+        run: python tools/dsh_skills.py selftest
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Smoke install / verify / uninstall (temp DSH home)
+        shell: bash
+        run: |
+          set -euo pipefail
+          TMP_HOME="$(mktemp -d)"
+          python tools/dsh_skills.py install --mode full --dsh-home "$TMP_HOME" --no-backup
+          python tools/dsh_skills.py verify --dsh-home "$TMP_HOME" --require-all
+          python tools/dsh_skills.py list --dsh-home "$TMP_HOME" --json > /dev/null
+          python tools/dsh_skills.py uninstall --names academic-paper --dsh-home "$TMP_HOME" --keep
+          rm -rf "$TMP_HOME"
+      - name: Build lock check summary
+        run: python tools/dsh_skills.py doctor

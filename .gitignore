@@ -1,0 +1,26 @@
+# Local / generic
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.idea/
+.vscode/*
+!.vscode/settings.json.example
+
+# Repo-local scratch
+tmp/
+*.tmp
+*.log
+.claude/

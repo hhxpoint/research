@@ -1,0 +1,10 @@
+# IMPORTANT: the repository ships byte-identical payloads to what is installed
+# into $DSH_HOME/skills, and manifests/skills.lock.json pins every file's sha256.
+# Disable all EOL/text normalization so `git clone` reproduces the exact bytes
+# that were hashed. (Third-party skills may contain CRLF; normalizing would
+# break verify on a fresh clone.)
+* -text
+
+*.tar.gz binary
+*.png binary
+*.jpg binary
