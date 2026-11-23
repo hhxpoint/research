@@ -13,7 +13,7 @@ jobs:
   test:
     name: ${{ matrix.os }} / py${{ matrix.python }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -26,8 +26,12 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install PyYAML
         run: python -m pip install --disable-pip-version-check pyyaml
+      - name: Byte-compile tools and tests
+        run: python -m py_compile tools/dsh_skills.py tools/build_lock.py tools/apply_notices.py tests/test_repo.py
       - name: Validate lock file consistency
         run: python tools/build_lock.py --check
+      - name: Validate licence / provenance files
+        run: python tools/apply_notices.py --check
       - name: Repository selftest
         run: python tools/dsh_skills.py selftest
       - name: Unit tests
@@ -42,5 +46,23 @@ jobs:
           python tools/dsh_skills.py list --dsh-home "$TMP_HOME" --json > /dev/null
           python tools/dsh_skills.py uninstall --names academic-paper --dsh-home "$TMP_HOME" --keep
           rm -rf "$TMP_HOME"
-      - name: Build lock check summary
+      - name: Clean-room rebuild determinism
+        shell: bash
+        run: |
+          set -euo pipefail
+          TMP_HOME="$(mktemp -d)"
+          TMP_REPO="$(mktemp -d)"
+          python tools/dsh_skills.py install --mode full --dsh-home "$TMP_HOME" --no-backup
+          git clone --quiet . "$TMP_REPO"
+          (
+            cd "$TMP_REPO"
+            python tools/build_lock.py --from-installed --dsh-home "$TMP_HOME"
+            if [ -n "$(git status --porcelain)" ]; then
+              echo "ERROR: --from-installed rebuild differs from committed content"
+              git status --short
+              exit 1
+            fi
+          )
+          rm -rf "$TMP_HOME" "$TMP_REPO"
+      - name: Doctor
         run: python tools/dsh_skills.py doctor

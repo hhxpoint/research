@@ -31,8 +31,8 @@ python tools\dsh_skills.py verify --require-all
 Windows 也可以直接：
 
 ```powershell
-.\scripts\install.ps1            # 默认 full
-.\scripts\install.ps1 --mode minimal
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1   # 默认 full
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 --mode minimal
 ```
 
 Linux / macOS：
@@ -53,7 +53,7 @@ python3 tools/dsh_skills.py install --mode full
 
 | 技能 | 来源 | 许可证 | 用途 |
 |---|---|---|---|
-| `research-stack` | 本仓库原创 | MIT | 科研总入口：按任务路由到其余技能 + 三条推荐流水线 |
+| `research-stack` | 本仓库原创 | MIT | 科研总入口：按任务路由到其余技能 + 四条推荐流水线 |
 | `academic-paper` | ARS | CC BY-NC 4.0 | 12-agent 论文写作流水线，11 模式（含 citation-check / rebuttal-audit） |
 | `academic-paper-reviewer` | ARS | CC BY-NC 4.0 | 5 席位审稿面板（full / re-review / methodology / calibration） |
 | `academic-pipeline` | ARS | CC BY-NC 4.0 | 10 阶段总编排，含 Stage 2.5/4.5 诚信闸门 |
@@ -62,7 +62,7 @@ python3 tools/dsh_skills.py install --mode full
 | `scientific-writing` | K-Dense | MIT | 手稿撰写/修订/审计：证据溯源、reporting guideline、一致性检查 |
 | `citation-management` | K-Dense | MIT | OpenAlex/PubMed/Google Scholar 检索、引用校验、BibTeX 生成 |
 | `scientific-visualization` | K-Dense | MIT | 期刊级图表：多面板、色盲友好、期刊导出规格 |
-| `venue-templates` | K-Dense | MIT | Nature/Science/Cell/NeurIPS/PLOS/NIH/NSF 模板与格式规则 |
+| `venue-templates` | K-Dense | MIT + 内含 LPPL 1.3 资产 | Nature/Science/Cell/NeurIPS/PLOS/NIH/NSF 模板与格式规则 |
 | `research-lit` | ARIS | MIT | 找论文、related work、文献精读 |
 | `experiment-plan` | ARIS | MIT | claim-driven 实验计划：消融矩阵、评估协议、算力预算 |
 | `analyze-results` | ARIS | MIT | 实验结果统计、对比表、趋势与下一步实验 |
@@ -96,7 +96,7 @@ python tools\dsh_skills.py install --mode full --exclude sr-screener,scientific-
 | 回滚 | 多技能安装中途失败时，已换入的技能会回滚、旧版本还原 |
 | 幂等 | 内容相同则跳过；`--force` 可强制重装 |
 | 防路径穿越 | 解压归档时拒绝绝对路径、`..`、符号链接/硬链接 |
-| 可审计 | 每个技能目录带 `DSH-PORT.md`：上游仓库、commit、许可证、修改内容、卸载方式 |
+| 可审计 | 每个技能目录带 `DSH-PORT.md`（来源/commit/修改点）+ `NOTICE.md`（署名/许可证 URI）+ `LICENSE.txt`（完整许可证原文）；ARS 另注明非商业限制；venue-templates 单独披露 LPPL 资产 |
 | 安全边界 | 安装不执行任何技能脚本；脚本只在你/模型主动运行时才执行 |
 
 常用命令：
@@ -110,7 +110,7 @@ python tools\dsh_skills.py uninstall --names deep-research --keep   # 先看再�
 python tools\dsh_skills.py uninstall --names deep-research          # 删除并备份
 ```
 
-退出码：`0` 成功，`1` 校验失败，`2` 用法/配置错误，`3` 完整性错误（哈希不符/归档不安全）。
+退出码：`0` 成功；`1` verify/selftest/doctor 检查失败（含已安装文件哈希不符）；`2` 用法或配置错误（参数、路径不可写等）；`3` 安装阶段的来源完整性错误（归档/载荷哈希不符、归档不安全）。
 
 ---
 
@@ -132,11 +132,13 @@ research/
 │  └─ research-writing-skill/   zLanqing
 ├─ vendor/
 │  ├─ ars-dsh-v3.24.4-d103b100.tar.gz   ARS 5 件套（CC BY-NC 4.0，单归档分发）
-│  └─ licenses/                 上游许可证原文
+│  ├─ ARS-NOTICE.md             非商业限制与修改说明（bundle 级）
+│  └─ licenses/                 MIT / CC BY-NC / LPPL 许可证原文
 ├─ manifests/skills.lock.json   技能清单 + 逐文件 sha256 + 预设 + 来源 commit
 ├─ tools/
 │  ├─ dsh_skills.py             安装 / 校验 / 卸载 / doctor / selftest
-│  └─ build_lock.py             维护者：重建 ARS 归档与锁文件，--check 校验自洽
+│  ├─ build_lock.py             维护者：内存构建 + 原子写入 ARS 归档与锁文件，--check 校验自洽
+│  └─ apply_notices.py          维护者：生成/校验 NOTICE、LICENSE、DSH-PORT 与 LPPL 披露
 ├─ tests/                       unittest：锁文件、归档安全、安装/校验/回滚
 ├─ scripts/install.ps1|.sh      薄封装
 ├─ docs/
@@ -158,6 +160,7 @@ research/
 - [DSH 技能规范](docs/dsh-skill-spec.md)：技能目录、frontmatter 规则、静默失败原因、移植检查表。
 - [维护手册](docs/maintenance.md)：上游升级、重新生成锁文件、新增自有技能、发布与网络兜底。
 - 调研留档：[auto-research](docs/auto-research-skills-survey.md) ｜ [论文写作](docs/paper-writing-skills-survey.md)。
+- 质量记录：[v0.1.0 独立审计与 v0.1.1 处置](docs/audit-2026-11-23.md)。
 
 ---
 
@@ -165,7 +168,9 @@ research/
 
 - 本仓库原创部分：[MIT](LICENSE)。
 - 第三方技能：按各自许可证随附（MIT 保留版权声明；**ARS 为 CC BY-NC 4.0，禁止商业使用**）。
-  详见 [THIRD-PARTY.md](THIRD-PARTY.md) 与 `vendor/licenses/`。
+  每个已安装技能目录都带 `NOTICE.md` + `LICENSE.txt`（ARS 另含完整 CC 文本与非商业声明）；
+  `venue-templates` 内含 Elsevier elsarticle 资产，按 LPPL 1.3 单独披露。
+  详见 [THIRD-PARTY.md](THIRD-PARTY.md)、`vendor/licenses/` 与 `vendor/ARS-NOTICE.md`。
 
 ## 维护
 

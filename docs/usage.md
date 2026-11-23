@@ -83,7 +83,8 @@ deep-research  →  experiment-plan  →  （跑实验）→  analyze-results
 - **引用与数字必须可回溯**：引用先过 `citation-management` 的校验脚本；实验数字注明来源文件/表格。
   不要接受技能编造 DOI、作者或年份——这是 AI 写论文最常见的事故。
 - **图表**：`scientific-visualization` 产出图片与导出计划；需要 Word/PDF 时交给 `office-*` 技能，
-  不需要额外装 pandoc/tectonic。
+  不需要额外装 pandoc/tectonic（若直接用 `academic-paper` 的 DOCX/PDF 输出模式，仍可能分别需要
+  Pandoc / tectonic；走 `office-*` 技能则不需要）。
 - **AI 使用声明**：投顶刊/顶会时按目标 venue 政策填写 AI 使用声明；`academic-paper` 的
   `disclosure` 模式可以帮你起草。
 

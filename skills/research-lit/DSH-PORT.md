@@ -1,11 +1,14 @@
 # DSH port provenance — research-lit
 
 - upstream: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep
-- commit: `unpinned (jsDelivr @main)`
-- license: MIT 
+- commit: `4ba94ae2a1c1fbbb14858750dd8764cabf6c28bd`
+- license: MIT
+- copyright: Copyright (c) 2026 wanshuiyin
 - imported: 2026-11-23
-- upstream SKILL.md: unchanged body, DSH port note prepended
-- merged dirs: []
-- files installed: 1
-- extra notes: —
+- packaged files: 7
 - uninstall: remove this directory (`~/.dsh/skills/research-lit`)
+
+## Modifications
+
+- DSH port note prepended to SKILL.md (tool names, `$ARGUMENTS`, notices).
+- Added `NOTICE.md` and `LICENSE.txt` (and, for venue-templates, LPPL notices).

@@ -12,7 +12,8 @@
 
 | 文件 | 作用 |
 |---|---|
-| `tools/build_lock.py --from-installed` | 从已安装的 DSH 技能重建 ARS 归档 + 锁文件（首次生成/升级时用） |
+| `tools/build_lock.py --from-installed` | 从已安装的 DSH 技能重建 ARS 归档 + 锁文件（首先生成/升级时用；内存构建 + 校验通过后才原子写入） |
+| `tools/apply_notices.py --write/--check` | 生成或校验每个技能的 `NOTICE.md` / `LICENSE.txt` / `DSH-PORT.md`（含 LPPL 披露） |
 | `tools/build_lock.py --check` | 仅用仓库内容重建并比对锁文件（CI 用） |
 | `tools/dsh_skills.py selftest` | 校验仓库内容：frontmatter、哈希、归档安全 |
 | `tools/dsh_skills.py install/verify` | 端到端安装与校验 |
@@ -26,8 +27,10 @@
 3. 通过 jsDelivr / git 拉取新版本技能文件到 `skills/<name>/`（保留 DSH-PORT.md 约定）：
    - 重新插入 DSH 移植说明（工具映射、`$ARGUMENTS` 说明、来源/commit/许可证）；
    - 检查正文引用的相对资源是否齐全；
-4. 在开发机上把新技能安装到 `$DSH_HOME/skills/<name>`（或临时 `--dsh-home`），
-   运行 `python tools/build_lock.py --from-installed` 重新生成归档与锁文件；
+4. 运行 `python tools/apply_notices.py --write` 重新生成 NOTICE/LICENSE/DSH-PORT；
+   在一个**干净的临时 DSH home** 里安装 ARS 5 个技能（`--dsh-home` 指向临时目录），
+   再运行 `python tools/build_lock.py --from-installed --dsh-home <临时目录>` 重新生成归档与锁文件；
+   `--from-installed` 会忽略 `__pycache__`/`*.pyc` 等运行时文件，且失败时不会留下半写入的归档；
 5. 运行 `python tools/dsh_skills.py selftest`、`build_lock.py --check`、单元测试；
 6. 更新 `THIRD-PARTY.md` 的 commit 与 `CHANGELOG.md`，提交。
 
@@ -52,13 +55,14 @@
 3. 把技能名加入需要的 preset（`PRESETS`）。
 4. `python tools/build_lock.py --from-installed` 重新生成锁文件（普通技能直接从仓库 `skills/` 读取；
    只有 ARS 的 tar 技能需要已安装在 `$DSH_HOME/skills`，因为需要重建归档）。
-5. 跑一遍 `selftest` 与测试，提交。
+5. 跑一遍 `selftest`、`apply_notices --check` 与测试，提交。
 
 ## 本地完整验证
 
 ```powershell
 python tools\dsh_skills.py selftest
 python tools\build_lock.py --check
+python tools\apply_notices.py --check
 python -m unittest discover -s tests -v
 
 $tmp = Join-Path $env:TEMP ("dsh-skills-test-" + [guid]::NewGuid())
@@ -68,17 +72,17 @@ python tools\dsh_skills.py uninstall --names academic-paper --dsh-home $tmp --ke
 Remove-Item -Recurse -Force $tmp
 ```
 
-CI（`.github/workflows/validate.yml`）在 Linux/Windows × Python 3.10/3.12 上执行同样的检查。
+CI（`.github/workflows/validate.yml`）在 Linux/Windows × Python 3.10/3.12 上执行同样的检查，
+并额外做一次「干净临时 DSH home → `--from-installed` → 重建结果与提交版本一致」的确定性检查。
 
 ## 发布流程
 
 1. 确认 `CHANGELOG.md` 已更新，锁文件已重新生成；
 2. `git tag v0.1.0 && git push --tags`；
-3. 若 `git push` 因网络失败（本机到 github.com 的 443 可能被重置），使用 API 兜底：
-   - 已有工具 `ai-paper-radar/scripts/publish_api.py` 的思路：把本地领先 origin 的提交用
-     GitHub REST API（blobs → tree → commit → ref）发布；
-   - 认证用 `gh auth token`（本机 gh 已登录 hhxpoint）或 `GITHUB_TOKEN` 环境变量；
-   - 发布后必须核对远端 commit SHA 与本地一致，再删除本地临时分支。
+3. 若 `git push` 因网络失败（到 github.com 的连接可能被重置），可以用 GitHub REST API 兜底：
+   - 把本地提交的文件通过 REST API（blobs → tree → commit → ref）发布；
+   - 认证使用 `gh auth token` 或 `GITHUB_TOKEN` 环境变量，不要把 token 写入仓库或日志；
+   - 发布后核对远端 commit/tree SHA 与本地一致（`build_lock.py --check` 亦可做内容一致性校验）。
 4. 发布后检查 GitHub Actions 的 validate 是否为绿。
 
 ## 版本与兼容性

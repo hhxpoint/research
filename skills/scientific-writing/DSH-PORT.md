@@ -2,10 +2,13 @@
 
 - upstream: https://github.com/K-Dense-AI/scientific-agent-skills
 - commit: `c21d13b3cc2894680229ba9959a53281acb9200e`
-- license: MIT 
+- license: MIT
+- copyright: Copyright (c) 2025 K-Dense Inc.
 - imported: 2026-11-23
-- upstream SKILL.md: unchanged body, DSH port note prepended
-- merged dirs: []
-- files installed: 31
-- extra notes: —
+- packaged files: 37
 - uninstall: remove this directory (`~/.dsh/skills/scientific-writing`)
+
+## Modifications
+
+- DSH port note prepended to SKILL.md (tool names, `$ARGUMENTS`, notices).
+- Added `NOTICE.md` and `LICENSE.txt` (and, for venue-templates, LPPL notices).

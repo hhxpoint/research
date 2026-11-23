@@ -2,6 +2,21 @@
 
 本仓库遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 与语义化版本。
 
+## [0.1.1] - 2026-11-23
+
+### Fixed
+
+- 修复 `uninstall --force` 可借 `..`/绝对路径删除技能根之外目录的问题；名称现在强制 kebab-case 并在解析后做目录包含校验（含测试）。
+- 安装事务：`--no-backup` 下被替换副本先暂存，失败回滚不再丢旧版本；补「中途失败回滚」测试（有/无备份两条路径）。
+- `build_lock --from-installed` 改为内存构建 + 校验通过后原子写入，失败不再留下半写入的 tar/锁；自动忽略 `__pycache__`/`*.pyc` 等运行时文件。
+- tar 解压拒绝 FIFO/设备等特殊成员；安装器与 selftest 增加成员集合严格校验。
+- `verify` 忽略 `__pycache__`/`*.pyc`、报告未管理的技能目录；拒绝驼峰调用键（DSH 会静默丢弃）。
+- `--only` 去重；`--only` 与 `--exclude` 互斥；`doctor` 改为只读，不再创建 `$DSH_HOME`。
+- 退出码文档与实际行为对齐（1=verify/selftest/doctor 失败，3=安装期来源完整性错误）。
+- 每个技能目录新增 `NOTICE.md` + `LICENSE.txt`（ARS 含完整 CC BY-NC 文本）；`venue-templates` 的 Elsevier elsarticle 资产按 LPPL 1.3 单独披露；`vendor/licenses/` 增加 LPPL 原文。
+- ARIS 3 个技能的来源已核对并固定到 commit `4ba94ae2...`；`research-stack` 补齐 DSH-PORT/NOTICE/LICENSE。
+- 公开 v0.1.0 独立审计记录（`docs/audit-2026-11-23.md`）并逐项关闭 M1–M7 / S1–S8。
+
 ## [0.1.0] - 2026-11-23
 
 ### Added

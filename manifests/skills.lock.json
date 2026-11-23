@@ -46,19 +46,28 @@
   "schemaVersion": 1,
   "skills": [
     {
-      "archivePath": "academic-paper/SKILL.md",
       "category": "paper-writing",
       "description": "12-agent academic paper writing pipeline. 11 modes (full/plan/outline/revision/revision-coach/abstract/lit-review/format-convert/citation-check/disclosure/rebuttal-audit). 6 paper types, 5 citation formats, bilingual abstracts, LaTeX/DOCX-via-Pandoc/PDF output. Style Calibration + Writing Quality Check + Anti-Patterns with IRON RULE markers. Triggers: write paper, academic paper, guide my paper, parse reviews, I got reviewer comments, revision roadmap, should we push back, conference rebuttal, grant panel response, audit my rebuttal, check my response draft, AI disclosure, check citations, citation check, check my references, verify references, look over the refs, 寫論文, 學術論文, 引導我寫論文, 審查意見, 我收到審查意見, 修訂路線圖, 評估回覆, 檢查引用, 引用檢查, 檢查參考文獻, 核對文獻, 논문 작성, 초록 작성, 논문 수정, 논문 계획을 도와줘, 심사 의견을 받았어, 심사 의견 반영, 답변서 점검, AI 사용 고지, 인용 확인, 인용 형식 검사, enmendar mi artículo, redactar artículo, guía mi artículo, analizar reseñas, auditar mi respuesta, verificar borrador de respuesta, verificar citas, divulgación de IA.",
       "files": [
         {
-          "bytes": 468,
+          "bytes": 617,
           "path": "DSH-PORT.md",
-          "sha256": "e45d17d02160563166b49c29b267e653ec9e329c2352d79c0c5509c5588142c6"
+          "sha256": "05bccaa4802356358fb96a1c52d7628b38a4cec9b01ea471e556ffdb5fb5da3a"
         },
         {
-          "bytes": 73124,
+          "bytes": 19584,
+          "path": "LICENSE.txt",
+          "sha256": "b3848009d12a173f549ef98d9ee486e64459e8eb5d9f895bff53782b4aa86d7c"
+        },
+        {
+          "bytes": 907,
+          "path": "NOTICE.md",
+          "sha256": "b7f1cb3690ce2ec6dc16ac9300d5cc8fdaccd7ef67498f632e3cf45375ab443b"
+        },
+        {
+          "bytes": 72552,
           "path": "SKILL.md",
-          "sha256": "a21777d1adb0b5479abf425e7e8e7c2b8dffa22a5e43902a496336477567dadf"
+          "sha256": "f411ff547a132da73e48adf4a5015c6697b6d0c996300e4fb468802a2137900c"
         },
         {
           "bytes": 12131,
@@ -1152,19 +1161,28 @@
       "source": "ars"
     },
     {
-      "archivePath": "academic-paper-reviewer/SKILL.md",
       "category": "review",
       "description": "Multi-perspective academic paper review with dynamic reviewer personas. Runs a 5-seat, role-separated review panel (Journal-Fit Reviewer + 3 peer-review roles + Devil's Advocate) with field-specific expertise; role separation is not a claim of independent error processes. Supports full review, re-review (verification), quick assessment, methodology focus, Socratic guided, and calibration modes. Triggers on: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review, calibrate reviewer, reviewer calibration, measure reviewer accuracy, 審查論文, 論文審查, 模擬審查, 同儕審查, 幫我審這篇, 以審查人角度評估, 審查者校準, 논문 심사, 동료 심사, 모의 심사, 심사자 관점에서 평가, 심사자 보정, revisar artículo, revisión entre pares, revisión de manuscrito, informe de árbitro, revisa mi artículo, criticar artículo, simular revisión, revisión editorial, calibrar revisor.",
       "files": [
         {
-          "bytes": 486,
+          "bytes": 635,
           "path": "DSH-PORT.md",
-          "sha256": "ca667f1a6babd85e7db0774fc0ea0e2d9086f04e56876a95117c565c9cede5e2"
+          "sha256": "c1033c89540edaca7cf26e1fae343ec370b9ec5aee59a340e10822ea2337b588"
         },
         {
-          "bytes": 57327,
+          "bytes": 19584,
+          "path": "LICENSE.txt",
+          "sha256": "b3848009d12a173f549ef98d9ee486e64459e8eb5d9f895bff53782b4aa86d7c"
+        },
+        {
+          "bytes": 916,
+          "path": "NOTICE.md",
+          "sha256": "843df131a1888732fe9149efb102e5d88a96ea8228df8464f42142a8ab5d4189"
+        },
+        {
+          "bytes": 56881,
           "path": "SKILL.md",
-          "sha256": "38023b73debd64f96133ef81e055d7f4e4bf3ad75cc7a5af1d9fc3e794269396"
+          "sha256": "b675a66175d14ced0dbdfdaee0ab5fde84f7e520f8c0101c04e478dc3400f698"
         },
         {
           "bytes": 44698,
@@ -2088,19 +2106,28 @@
       "source": "ars"
     },
     {
-      "archivePath": "academic-pipeline/SKILL.md",
       "category": "orchestration",
       "description": "Orchestrator for the full academic research pipeline: research -> write -> integrity check -> review -> revise -> re-review -> re-revise -> final integrity check -> finalize. Coordinates deep-research, academic-paper, and academic-paper-reviewer into a seamless 10-stage workflow with mandatory, coverage-bounded integrity checks, two-stage peer review, and auditable quality-assurance artifacts. Triggers on: academic pipeline, research to paper, full paper workflow, paper pipeline, end-to-end paper, research-to-publication, complete paper workflow, 연구부터 논문까지, 연구 주제 설정부터 논문 완성까지, 논문 전체 워크플로, flujo de trabajo académico, investigación a artículo, flujo completo de artículo, pipeline de investigación completa, publicación de investigación, flujo de trabajo completo del artículo.",
       "files": [
         {
-          "bytes": 474,
+          "bytes": 623,
           "path": "DSH-PORT.md",
-          "sha256": "8f02e810b42de543529191b6d64f32ab116adf5fa85abc4c7b3097c6c690e19e"
+          "sha256": "26155e5c3634422ff2f772c1f9e4d7fcf977df0fda1b133630c811011dd520e1"
         },
         {
-          "bytes": 61389,
+          "bytes": 19584,
+          "path": "LICENSE.txt",
+          "sha256": "b3848009d12a173f549ef98d9ee486e64459e8eb5d9f895bff53782b4aa86d7c"
+        },
+        {
+          "bytes": 910,
+          "path": "NOTICE.md",
+          "sha256": "75c135381992dd16008de5919578343b62943e4292bc5c937793d4bc4a5f95cb"
+        },
+        {
+          "bytes": 60730,
           "path": "SKILL.md",
-          "sha256": "699da384b845b45b641c6ad8884c0b54a85b27753202611bf5b8924cbda389bd"
+          "sha256": "3a31d0021f5967aab55348c40fe1e228a253ea425eac7f7b95e245a92b3eebdb"
         },
         {
           "bytes": 45398,
@@ -3033,14 +3060,24 @@
       "description": "Analyze ML experiment results, compute statistics, generate comparison tables and insights. Use when user says \"analyze results\", \"compare\", or needs to interpret experimental data.",
       "files": [
         {
-          "bytes": 396,
+          "bytes": 517,
           "path": "DSH-PORT.md",
-          "sha256": "c350fd6dc26205edd6c7dd99051da7df4642e4f8094e09bcd2be773d5fb83f77"
+          "sha256": "ded04ab3ecf871f2422ab73c7a3979f5e5758dbb12d481ddf055abd1cf16e7a5"
         },
         {
-          "bytes": 2668,
+          "bytes": 1067,
+          "path": "LICENSE.txt",
+          "sha256": "e30cf5dd5f49b4f9b656590e23d782b4756c924a9f0ff0162b3e7b5d87006bf5"
+        },
+        {
+          "bytes": 534,
+          "path": "NOTICE.md",
+          "sha256": "9c2687d6afae1239b0caf8a57e5d5f394bf4d2884c72eab862f64466b89c5e2a"
+        },
+        {
+          "bytes": 2731,
           "path": "SKILL.md",
-          "sha256": "e93bd60df5acf9731bb7f6dd2723484e9a31354f415ef0a253179e563e90e9e3"
+          "sha256": "020dd4309be8782e3efaf6e5c9b9f0235355ecd902c3cea89e6d8f7bd8b78db5"
         }
       ],
       "license": "MIT",
@@ -3053,14 +3090,24 @@
       "description": "Autonomous iteration loop: modify, verify, keep/discard against any metric",
       "files": [
         {
-          "bytes": 648,
+          "bytes": 589,
           "path": "DSH-PORT.md",
-          "sha256": "c3eb2d30223e994014bb77671e5284cc371fc8e6594087477417c7f97fafcc2c"
+          "sha256": "e4838bf8010d6d2e60f935232e90e1cc930c189da3975106116a345b3c741654"
         },
         {
-          "bytes": 11989,
+          "bytes": 1068,
+          "path": "LICENSE.txt",
+          "sha256": "36fe186f404fa529a4c290a5c671e0dd07162be0c3270c02e1cdc831e97bf127"
+        },
+        {
+          "bytes": 676,
+          "path": "NOTICE.md",
+          "sha256": "dea9656412d678e86decd72ee9e77cb0ada6525801c822b6b57930ad5b50ae9b"
+        },
+        {
+          "bytes": 11946,
           "path": "SKILL.md",
-          "sha256": "f007cade9bcb78ac7b329ddb3193c10e173d2c64c43c3047e3e1262a7c74bb93"
+          "sha256": "92b823ad9bdbf3da1275fd178956e1411629259b72ed883f8a9087254d7b14dd"
         },
         {
           "bytes": 6529,
@@ -3143,14 +3190,24 @@
       "description": "Comprehensive citation management for academic research. Search OpenAlex, PubMed, and Google Scholar for papers, extract accurate metadata, validate citations, and generate properly formatted BibTeX entries. This skill should be used when you need to find papers, verify citation information, convert DOIs to BibTeX, or ensure reference accuracy in scientific writing.",
       "files": [
         {
-          "bytes": 409,
+          "bytes": 517,
           "path": "DSH-PORT.md",
-          "sha256": "2a1cc523687c7ceb104e4db7af91574e5e6eff04de85339ce84b198b847dee29"
+          "sha256": "6749ddb76c46a2dd7134bc70299e53de7227e2bf815e6030191461b3181a4dd2"
         },
         {
-          "bytes": 17955,
+          "bytes": 1068,
+          "path": "LICENSE.txt",
+          "sha256": "09b02a3c9df3053c55531d503357a9c7cde275970e6c3ceaa1ddf5f0e90b40c1"
+        },
+        {
+          "bytes": 529,
+          "path": "NOTICE.md",
+          "sha256": "5637469fd9c1201b80f539c61f51f66f8e25720063592d1174f72edaf2b8927a"
+        },
+        {
+          "bytes": 17782,
           "path": "SKILL.md",
-          "sha256": "b39fbdb5941bbb68ba977853ee3986b19b9a9e5aa9636e282f1144a08606d145"
+          "sha256": "55c49df72681e088fb061bd3b21eae0e52ec0849c73b51206f3e6ca761f00667"
         },
         {
           "bytes": 9305,
@@ -3264,19 +3321,28 @@
       "source": "kdense"
     },
     {
-      "archivePath": "deep-research/SKILL.md",
       "category": "research",
       "description": "Universal deep research agent team. 13-agent pipeline for rigorous academic research on any topic. 8 modes: full research, quick brief, paper review, lit-review, fact-check, three-way literature scan, Socratic guided research dialogue, and systematic review with optional meta-analysis. Covers research question formulation, Socratic mentoring, methodology design, systematic literature search, source verification, cross-source synthesis, risk of bias assessment, meta-analysis, APA 7.0 report compilation, editorial review, devil's advocate challenges, ethics review, and post-research literature monitoring. Triggers on: research, deep research, literature review, systematic review, meta-analysis, PRISMA, evidence synthesis, fact-check, WHY HOW WHAT papers, 3W literature scan, guide my research, help me think through, 研究, 深度研究, 文獻回顧, 文獻探討, 系統性回顧, 後設分析, 事實查核, 三段式文獻掃描, 引導我的研究, 幫我釐清, 幫我想想, 我不確定要研究什麼, 研究方向, 研究主題, 심층 연구, 문헌 조사, 체계적 문헌고찰, 메타분석, 사실 확인, 연구 방향을 잡아줘, 연구 주제 정하는 것을 도와줘, revisión de literatura, metaanálisis",
       "files": [
         {
-          "bytes": 466,
+          "bytes": 615,
           "path": "DSH-PORT.md",
-          "sha256": "e4467537127fc68df78c0f663c6470b595ad75125ac9a809fc2813a8634f97af"
+          "sha256": "a44a407ae194f58cb5fe206cfd0d380735d88b5f441e9991575d3b4b424f1ed3"
         },
         {
-          "bytes": 54300,
+          "bytes": 19584,
+          "path": "LICENSE.txt",
+          "sha256": "b3848009d12a173f549ef98d9ee486e64459e8eb5d9f895bff53782b4aa86d7c"
+        },
+        {
+          "bytes": 906,
+          "path": "NOTICE.md",
+          "sha256": "c3de722fe62cd19e0fc2cf82127ba8e6bf21fd7cc9852b68d875c2a9f94b1ceb"
+        },
+        {
+          "bytes": 53689,
           "path": "SKILL.md",
-          "sha256": "1a085e18f004a3e9be0ab15fc13c2355d66630e1b094305af86a50c398375962"
+          "sha256": "1a58ce1302d866b926dbea538bf8aa110a55c8fa671b78db9b326de6a5b8d727"
         },
         {
           "bytes": 35276,
@@ -4324,14 +4390,24 @@
       "description": "Turn a refined research proposal or method idea into a detailed, claim-driven experiment roadmap. Use after `research-refine`, or when the user asks for a detailed experiment plan, ablation matrix, evaluation protocol, run order, compute budget, or paper-ready validation that supports the core problem, novelty, simplicity, and any LLM / VLM / Diffusion / RL-based contribution.",
       "files": [
         {
-          "bytes": 396,
+          "bytes": 517,
           "path": "DSH-PORT.md",
-          "sha256": "efc10a92eb2b8cfe8ffce995d8bd321a96a9b44c0acbf9de48a93755b84036e3"
+          "sha256": "348f1a3194bc4d6ec56b945ea4939d5501def5ab2b3398127e0cd87fbc636626"
         },
         {
-          "bytes": 10939,
+          "bytes": 1067,
+          "path": "LICENSE.txt",
+          "sha256": "e30cf5dd5f49b4f9b656590e23d782b4756c924a9f0ff0162b3e7b5d87006bf5"
+        },
+        {
+          "bytes": 534,
+          "path": "NOTICE.md",
+          "sha256": "4698ba6aa3e195fdca627713fc602611565dc8df8c3d28a97a86046b97dbed62"
+        },
+        {
+          "bytes": 10799,
           "path": "SKILL.md",
-          "sha256": "c80324ec82bef7a8ecabaeae0bd5b030b2876a6f138717cf1bb5a47aa71f4a3c"
+          "sha256": "a4df27c214bff333cb45f9eb4b180403509e8690b03d10980aca4eb51362f6e0"
         }
       ],
       "license": "MIT",
@@ -4344,14 +4420,24 @@
       "description": "Search and analyze research papers, find related work, summarize key ideas. Use when user says \"find papers\", \"related work\", \"literature review\", \"what does this paper say\", or needs to understand academic papers.",
       "files": [
         {
-          "bytes": 390,
+          "bytes": 511,
           "path": "DSH-PORT.md",
-          "sha256": "44014571b179758e27efb374c1141dcc0fc370bc42296b2ceb3009831a9768e6"
+          "sha256": "d7f4712250533e0f3558b9884dd2b1fc50e37e67f465bcacd8f9c59cd31edf61"
         },
         {
-          "bytes": 47065,
+          "bytes": 1067,
+          "path": "LICENSE.txt",
+          "sha256": "e30cf5dd5f49b4f9b656590e23d782b4756c924a9f0ff0162b3e7b5d87006bf5"
+        },
+        {
+          "bytes": 531,
+          "path": "NOTICE.md",
+          "sha256": "c561d444d2aa0373660065e77a17e19bdfa44c418ff376c596e01bff4303ea2d"
+        },
+        {
+          "bytes": 46390,
           "path": "SKILL.md",
-          "sha256": "513fb5572f887d591fc15ddc7a948354a0a72da075c80ac6ab27e5a757579f8b"
+          "sha256": "a3e5d605872c250e67ef49d93ccd41f780c63b67b57dabc2ae76af179ab19319"
         }
       ],
       "license": "MIT",
@@ -4361,12 +4447,27 @@
     },
     {
       "category": "meta",
-      "description": "科研技能栈总入口：按任务路由到文献综述、实验计划、结果分析、论文写作、审稿返修、引用校验、图表、顶会模板等具体技能，并给出顶会投稿、中文期刊、系统综述三条推荐流水线。当用户要做科研（选题、读文献、做实验、写论文、润色、返修、查引用、投稿）但不确定该用哪个技能时，先加载本技能。",
+      "description": "科研技能栈总入口：按任务路由到文献综述、实验计划、结果分析、论文写作、审稿返修、引用校验、图表、顶会模板等具体技能，并给出顶会投稿、中文期刊、系统综述四条推荐流水线。当用户要做科研（选题、读文献、做实验、写论文、润色、返修、查引用、投稿）但不确定该用哪个技能时，先加载本技能。",
       "files": [
+        {
+          "bytes": 420,
+          "path": "DSH-PORT.md",
+          "sha256": "4a27ecb02f9f98175f78d81ced6d2f6d082a32ba10fc5575bd01a45714469849"
+        },
+        {
+          "bytes": 1065,
+          "path": "LICENSE.txt",
+          "sha256": "c205e76936f9c041c61753fa9a0672ae8a3bdf622d30193f36a96e8a9c3d71ae"
+        },
+        {
+          "bytes": 467,
+          "path": "NOTICE.md",
+          "sha256": "331c6f25c8c4ba145a79e912397cd270d95ccf742906a2149bef202ceec76340"
+        },
         {
           "bytes": 5011,
           "path": "SKILL.md",
-          "sha256": "9974fa83f4feb220af2d968b4a8bfe5a8ed8cef59b8d5d19a6c588ddd1d02d9c"
+          "sha256": "3048d71ed14b4f824bf4faafe724ef1f9dce393439a068e49cbf00725ebcfe72"
         }
       ],
       "license": "MIT",
@@ -4379,14 +4480,24 @@
       "description": "Chinese-first research paper writing, revision, polishing, section drafting, rebuttal, peer-review response, thesis prose improvement, and manuscript argument planning. Use when the user asks to write or revise论文正文, abstracts, introductions, methods, results, discussion, conclusions, related work, responses to reviewers, LaTeX/Overleaf text, or academic prose. Preserve formulas, English paper titles, terms, citations, and measured results.",
       "files": [
         {
-          "bytes": 418,
+          "bytes": 522,
           "path": "DSH-PORT.md",
-          "sha256": "66d6e071699a887d7a0bf08d5903cf435f768dfb62463f065ec5934ace21536c"
+          "sha256": "845eccc79361dd4072e00cd97edc9a50d48461692c7247a68939ec423543d78b"
         },
         {
-          "bytes": 5358,
+          "bytes": 1066,
+          "path": "LICENSE.txt",
+          "sha256": "36567c1c66b9971768a8693f6c6bc230655c3cbd7a8ec3de754e549398af8c00"
+        },
+        {
+          "bytes": 531,
+          "path": "NOTICE.md",
+          "sha256": "cd33d1333f25992151b80e697676298ba00f8a295ce22b8c4a97d2f342c82f58"
+        },
+        {
+          "bytes": 5380,
           "path": "SKILL.md",
-          "sha256": "eb09c0af66b4c9838cc84142601873f8ccf5d03f637eb9197049552af6403722"
+          "sha256": "5db15295097565fa5941a2eb348230cb6035905a89922eabcb62b15fac2393fc"
         },
         {
           "bytes": 242,
@@ -4499,14 +4610,24 @@
       "description": "Creates and audits truthful, accessible, publication-ready scientific figures with Matplotlib, Seaborn, or Plotly. Use it for figure design, multi-panel layouts, uncertainty and missing-data displays, color/contrast review, image metadata validation, and journal export planning.",
       "files": [
         {
-          "bytes": 419,
+          "bytes": 527,
           "path": "DSH-PORT.md",
-          "sha256": "568c4433d2abc753175e5cf73e6cf21cbc3998e63b8fe0d7e941f883527322ce"
+          "sha256": "bfe8231cf4b802eb51975e44261752587fd98a77080f46870a0d9aecb9892147"
         },
         {
-          "bytes": 16751,
+          "bytes": 1068,
+          "path": "LICENSE.txt",
+          "sha256": "09b02a3c9df3053c55531d503357a9c7cde275970e6c3ceaa1ddf5f0e90b40c1"
+        },
+        {
+          "bytes": 534,
+          "path": "NOTICE.md",
+          "sha256": "9d3c8fc7b77eb248d7bdc47b7389e9e049440edf06ec24cbe6fa9f4cacfdd197"
+        },
+        {
+          "bytes": 16630,
           "path": "SKILL.md",
-          "sha256": "6bf787fc26dbf14bf5e36761359e7c3154a8772b8609032a49f89d603997f733"
+          "sha256": "e113f135f263683daec6a84c93563db0644bba8e7cf0c5ae443af2ef34d8519d"
         },
         {
           "bytes": 6756,
@@ -4604,14 +4725,24 @@
       "description": "Drafts, revises, and audits scientific manuscripts or reports with explicit evidence provenance, reporting-guideline coverage, authorship accountability, confidentiality controls, and local consistency checks. Use for manuscript sections, references, declarations, tables, figures, or submission preparation when scientific accuracy and traceability matter.",
       "files": [
         {
-          "bytes": 407,
+          "bytes": 515,
           "path": "DSH-PORT.md",
-          "sha256": "150c5d406f99a298d6024996747730052c3d2a5035ff5ae4c9c9b9bfdf366bd1"
+          "sha256": "ba77df836076baffa03a97301decd33a0aa5d796bb7b6ae3add6187f7f545877"
         },
         {
-          "bytes": 16244,
+          "bytes": 1068,
+          "path": "LICENSE.txt",
+          "sha256": "09b02a3c9df3053c55531d503357a9c7cde275970e6c3ceaa1ddf5f0e90b40c1"
+        },
+        {
+          "bytes": 528,
+          "path": "NOTICE.md",
+          "sha256": "cc224f51c43ca72bdba674b19f0158789033dda1db0cee7a3aabf030be15ff26"
+        },
+        {
+          "bytes": 16049,
           "path": "SKILL.md",
-          "sha256": "48ed1f78f7a55e09aa73007d5965663254f951406dee4600dac15a9564848df2"
+          "sha256": "651cfb1b088f797b28e8d5b2d41342e2d01c88a5264fbaa3b25329dedfdb2a51"
         },
         {
           "bytes": 2713,
@@ -4770,19 +4901,28 @@
       "source": "kdense"
     },
     {
-      "archivePath": "sr-screener/SKILL.md",
       "category": "systematic-review",
       "description": "Protocol-driven study screening for systematic, scoping and rapid reviews. Turns a proposal or PROSPERO protocol into confirmed eligibility rules, then screens titles/abstracts and full texts with two blinded AI reviewers and a third-reviewer adjudicator: ordered exclusion codes, no silent defaults, resumable batch runs, QC (seed studies, near-miss rechecks, kappa and PABAK), PRISMA 2020 counts, EndNote/Zotero RIS groups, an Excel log, a methods draft and a literature_corpus handoff to academic-paper. Reads RIS, PubMed .nbib, Web of Science and CSV exports; removes duplicates. 8 modes: protocol, quick, pilot, ta-screen, ft-screen, adjudicate, audit, report. Use it to screen records against eligibility criteria, pilot screening, resolve screening conflicts, audit exclusions or report the selection process. Triggers on: screen these papers, title/abstract screening, full-text screening, screening conflicts, inclusion criteria, PRISMA flow, غربالگری مقالات, اسکرینینگ عنوان و چکیده, معیارهای ورود و خروج.",
       "files": [
         {
-          "bytes": 462,
+          "bytes": 611,
           "path": "DSH-PORT.md",
-          "sha256": "c28e15f9358fe10be8a503f736934ad4b103086870aad28b689b3b191ec65b67"
+          "sha256": "fe112c5e33d1213a7523552c87f1115725c19075eecfdf5b801213e50c89e06d"
         },
         {
-          "bytes": 35440,
+          "bytes": 19584,
+          "path": "LICENSE.txt",
+          "sha256": "b3848009d12a173f549ef98d9ee486e64459e8eb5d9f895bff53782b4aa86d7c"
+        },
+        {
+          "bytes": 904,
+          "path": "NOTICE.md",
+          "sha256": "e8f934ae0b94e9c6fbd5c9afa81e1420482ccdc6e9c613229d980cb1ea815693"
+        },
+        {
+          "bytes": 35042,
           "path": "SKILL.md",
-          "sha256": "8dc840ba5c18ca2b23a714d43ba013a6e7141d853b9215cb73699e026006067b"
+          "sha256": "bb4ff6e7d39917de69c3f91d2ee732016ec73af405d531c9dbb6a8fbe8659a21"
         },
         {
           "bytes": 5920,
@@ -5690,14 +5830,34 @@
       "description": "Prepares journal manuscripts, conference papers, research posters, and grant documents using venue-specific formatting guidance and bundled LaTeX scaffolds. Supports selecting an official template, checking current page or anonymity rules, adapting academic writing to a venue, or inspecting a submission PDF.",
       "files": [
         {
-          "bytes": 401,
+          "bytes": 509,
           "path": "DSH-PORT.md",
-          "sha256": "8212daa57886a4e8eadd9825cfcfc3a3f703e2a2b9f94526d92fdd07d93512a7"
+          "sha256": "357fff53a3d7bdf0b46c430e2603ae6a8c2156a05e55a7fbceadb9654ad240ba"
         },
         {
-          "bytes": 14598,
+          "bytes": 19036,
+          "path": "LICENSE-LPPL-1.3c.txt",
+          "sha256": "c1ae6e179a6d28bbd5c483fbacc744acc75e922d598281dc3390aab26126e163"
+        },
+        {
+          "bytes": 1068,
+          "path": "LICENSE.txt",
+          "sha256": "09b02a3c9df3053c55531d503357a9c7cde275970e6c3ceaa1ddf5f0e90b40c1"
+        },
+        {
+          "bytes": 802,
+          "path": "NOTICE-LPPL.md",
+          "sha256": "fcd05da410349ea4294d9b3e874e87c7b1a24e8024a648b0047fdf2eabffec00"
+        },
+        {
+          "bytes": 806,
+          "path": "NOTICE.md",
+          "sha256": "8a49259052679a93927bb20f6e5e61ac79af5bf63ef4756a43a838f6909716a6"
+        },
+        {
+          "bytes": 14487,
           "path": "SKILL.md",
-          "sha256": "728d73cc4dc356cf2b9fca5738586d92bf33fcf2b7baecc80f7631f57d9cb5f7"
+          "sha256": "cc06f193187e003818e1c63137d0a8b3e9af47099bc9a683d33966bdfb9cd931"
         },
         {
           "bytes": 2366,
@@ -5871,8 +6031,8 @@
     },
     "ars": {
       "archive": "vendor/ars-dsh-v3.24.4-d103b100.tar.gz",
-      "archiveBytes": 3152388,
-      "archiveSha256": "596676de9b3c5597edcbafc11941954f61b13e9cc1db181da26eecd7fd5ee683",
+      "archiveBytes": 3183634,
+      "archiveSha256": "049b6effab59c2832d082e1934f68bd66ca181131db2d326c7bf93d054ded561",
       "commit": "d103b1005bb8c9f7a597e6a7ed473b75dcf8830e",
       "license": "CC-BY-NC-4.0",
       "licenseFile": "vendor/licenses/ARS-CC-BY-NC-4.0.txt",
@@ -5884,14 +6044,14 @@
       "commit": "c21d13b3cc2894680229ba9959a53281acb9200e",
       "license": "MIT",
       "licenseFile": "vendor/licenses/K-Dense-scientific-agent-skills-MIT.txt",
-      "note": "",
+      "note": "venue-templates 内含 Elsevier elsarticle 资产（LPPL 1.3），见 THIRD-PARTY.md。",
       "repo": "https://github.com/K-Dense-AI/scientific-agent-skills"
     },
     "local": {
-      "commit": "HEAD",
+      "commit": "self",
       "license": "MIT",
       "licenseFile": "LICENSE",
-      "note": "本仓库原创技能。",
+      "note": "本仓库原创技能，无上游 commit（commit=self）。",
       "repo": "https://github.com/hhxpoint/research"
     },
     "uditgoenka": {

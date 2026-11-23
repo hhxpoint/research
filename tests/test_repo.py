@@ -10,37 +10,48 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 import tarfile
 import tempfile
 import unittest
+from io import BytesIO
 from pathlib import Path
+from unittest import mock
 
 REPO = Path(__file__).resolve().parents[1]
 CLI = REPO / "tools" / "dsh_skills.py"
 LOCK = REPO / "manifests" / "skills.lock.json"
+BUILD_LOCK = REPO / "tools" / "build_lock.py"
+NOTICES = REPO / "tools" / "apply_notices.py"
 
 
-def load_module():
-    spec = importlib.util.spec_from_file_location("dsh_skills", CLI)
+def load_module(path: Path):
+    spec = importlib.util.spec_from_file_location(path.stem + "_mod", path)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
 
 
-MOD = load_module()
+MOD = load_module(CLI)
+BL = load_module(BUILD_LOCK)
 
 
 def run(*args: str, dsh_home: Path | None = None, check: bool = True) -> subprocess.CompletedProcess:
     cmd = [sys.executable, str(CLI), *args]
     if dsh_home is not None:
         cmd += ["--dsh-home", str(dsh_home)]
+    return run_cmd(cmd, check=check)
+
+
+def run_cmd(cmd: list[str], check: bool = True, cwd: Path | None = None) -> subprocess.CompletedProcess:
     env = dict(os.environ)
     env["PYTHONIOENCODING"] = "utf-8"
-    proc = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, encoding="utf-8", env=env)
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    proc = subprocess.run(cmd, cwd=cwd or REPO, capture_output=True, text=True, encoding="utf-8", env=env)
     if check and proc.returncode != 0:
         raise AssertionError(
             f"command failed ({proc.returncode}): {' '.join(cmd)}\n"
@@ -55,14 +66,12 @@ class TestRepoContent(unittest.TestCase):
         self.assertEqual(lock["schemaVersion"], 1)
         self.assertEqual(len(lock["skills"]), 15)
         names = {s["name"] for s in lock["skills"]}
-        self.assertIn("research-stack", names)
-        self.assertIn("academic-paper", names)
-        self.assertIn("autoresearch", names)
+        for expected in ("research-stack", "academic-paper", "autoresearch", "venue-templates"):
+            self.assertIn(expected, names)
         for preset in ("minimal", "writing", "full"):
             self.assertIn(preset, lock["presets"])
             self.assertTrue(set(lock["presets"][preset]) <= names, preset)
         self.assertEqual(len(lock["presets"]["full"]), 15)
-        # every source has license metadata
         for sid, source in lock["sources"].items():
             self.assertIn("license", source, sid)
             self.assertIn("repo", source, sid)
@@ -71,6 +80,10 @@ class TestRepoContent(unittest.TestCase):
         self.assertEqual(ars["license"], "CC-BY-NC-4.0")
         self.assertTrue((REPO / ars["archive"]).is_file())
         self.assertEqual(len(ars["archiveSha256"]), 64)
+        # provenance values are pinned (self for our own skill)
+        for sid, source in lock["sources"].items():
+            self.assertNotIn("unpinned", source["commit"], sid)
+        self.assertEqual(lock["sources"]["local"]["commit"], "self")
 
     def test_lock_file_hashes_match_repo_skills(self) -> None:
         lock = json.loads(LOCK.read_text(encoding="utf-8"))
@@ -90,24 +103,60 @@ class TestRepoContent(unittest.TestCase):
             meta = MOD.validate_skill_dir(REPO / "skills" / entry["name"], entry["name"])
             self.assertEqual(meta["name"], entry["name"])
 
+    def test_every_skill_has_notice_license_and_port(self) -> None:
+        lock = json.loads(LOCK.read_text(encoding="utf-8"))
+        for entry in lock["skills"]:
+            if entry["mode"] != "copy":
+                continue
+            d = REPO / "skills" / entry["name"]
+            for fname in ("NOTICE.md", "LICENSE.txt", "DSH-PORT.md"):
+                self.assertTrue((d / fname).is_file(), f"{entry['name']}: {fname}")
+        venue = REPO / "skills" / "venue-templates"
+        self.assertTrue((venue / "NOTICE-LPPL.md").is_file())
+        self.assertTrue((venue / "LICENSE-LPPL-1.3c.txt").is_file())
+
     def test_selftest(self) -> None:
         proc = run("selftest")
         self.assertIn("SELFTEST PASS", proc.stdout)
 
+    def test_notices_check(self) -> None:
+        proc = run_cmd([sys.executable, str(NOTICES), "--check"])
+        self.assertIn("NOTICES OK", proc.stdout)
+
     def test_build_lock_check(self) -> None:
-        proc = subprocess.run(
-            [sys.executable, str(REPO / "tools" / "build_lock.py"), "--check"],
-            cwd=REPO,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-        )
+        proc = run_cmd([sys.executable, str(BUILD_LOCK), "--check"])
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertIn("CHECK OK", proc.stdout)
+
+    def test_provenance_matches_lock(self) -> None:
+        lock = json.loads(LOCK.read_text(encoding="utf-8"))
+        sources = lock["sources"]
+        for entry in lock["skills"]:
+            if entry["mode"] != "copy":
+                continue
+            port = (REPO / "skills" / entry["name"] / "DSH-PORT.md").read_text(encoding="utf-8")
+            match = re.search(r"^- commit: `([^`]+)`", port, re.M)
+            self.assertIsNotNone(match, entry["name"])
+            self.assertEqual(match.group(1), sources[entry["source"]]["commit"], entry["name"])
+
+    def test_ars_skill_licenses_are_cc_by_nc(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            with tarfile.open(REPO / "vendor" / "ars-dsh-v3.24.4-d103b100.tar.gz", "r:gz") as tar:
+                members = {m.name: m for m in tar.getmembers()}
+                for name in ("academic-paper", "deep-research", "sr-screener"):
+                    notice = tar.extractfile(members[f"{name}/NOTICE.md"]).read().decode("utf-8")
+                    license_text = tar.extractfile(members[f"{name}/LICENSE.txt"]).read().decode("utf-8")
+                    port = tar.extractfile(members[f"{name}/DSH-PORT.md"]).read().decode("utf-8")
+                    self.assertIn("CC-BY-NC-4.0", notice)
+                    self.assertIn("Cheng-I Wu", notice)
+                    self.assertIn("NonCommercial", license_text)
+                    self.assertIn("d103b1005bb8c9f7a597e6a7ed473b75dcf8830e", port)
+                    self.assertNotIn("unpinned", port)
 
     def test_research_stack_skill(self) -> None:
         meta = MOD.validate_skill_dir(REPO / "skills" / "research-stack", "research-stack")
         self.assertTrue(meta["description"].strip())
+        self.assertIn("四条", meta["description"])
 
 
 class TestArchiveSafety(unittest.TestCase):
@@ -119,9 +168,7 @@ class TestArchiveSafety(unittest.TestCase):
                 info = tarfile.TarInfo(name="../escape.txt")
                 payload = b"pwned"
                 info.size = len(payload)
-                import io
-
-                tar.addfile(info, io.BytesIO(payload))
+                tar.addfile(info, BytesIO(payload))
             with self.assertRaises(MOD.IntegrityError):
                 MOD.extract_archive(evil, tmp / "out")
 
@@ -129,14 +176,76 @@ class TestArchiveSafety(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             tmp = Path(td)
             evil = tmp / "abs.tar.gz"
-            import io
-
             with tarfile.open(evil, "w:gz") as tar:
                 info = tarfile.TarInfo(name="/etc/passwd")
                 info.size = 3
-                tar.addfile(info, io.BytesIO(b"bad"))
+                tar.addfile(info, BytesIO(b"bad"))
             with self.assertRaises(MOD.IntegrityError):
                 MOD.extract_archive(evil, tmp / "out")
+
+    def test_rejects_symlink_member(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            evil = tmp / "link.tar.gz"
+            with tarfile.open(evil, "w:gz") as tar:
+                info = tarfile.TarInfo(name="link")
+                info.type = tarfile.SYMTYPE
+                info.linkname = "/etc/passwd"
+                tar.addfile(info)
+            with self.assertRaises(MOD.IntegrityError):
+                MOD.extract_archive(evil, tmp / "out")
+
+    def test_rejects_fifo_member(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            evil = tmp / "fifo.tar.gz"
+            with tarfile.open(evil, "w:gz") as tar:
+                info = tarfile.TarInfo(name="pipe")
+                info.type = tarfile.FIFOTYPE
+                tar.addfile(info)
+            with self.assertRaises(MOD.IntegrityError):
+                MOD.extract_archive(evil, tmp / "out")
+
+
+class TestSkillValidation(unittest.TestCase):
+    def test_rejects_camelcase_invocation_key(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td) / "probe"
+            shutil.copytree(REPO / "skills" / "research-stack", d)
+            skill_md = d / "SKILL.md"
+            text = skill_md.read_text(encoding="utf-8")
+            text = text.replace("---\n", "disableModelInvocation: true\n", 1)
+            skill_md.write_text(text, encoding="utf-8")
+            with self.assertRaises(MOD.VerifyError):
+                MOD.validate_skill_dir(d, "probe")
+
+    def test_runtime_artifacts_are_ignored(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td) / "x"
+            (d / "__pycache__").mkdir(parents=True)
+            (d / "SKILL.md").write_text("---\nname: x\ndescription: d\n---\nbody\n", encoding="utf-8")
+            (d / "__pycache__" / "a.cpython-310.pyc").write_bytes(b"\x00")
+            (d / ".DS_Store").write_bytes(b"\x00")
+            files = MOD.collect_files(d)
+            self.assertEqual(set(files), {"SKILL.md"})
+
+    def test_symlinked_dir_rejected(self) -> None:
+        if not hasattr(os, "symlink"):
+            self.skipTest("symlinks unsupported")
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            outside = tmp / "outside"
+            outside.mkdir()
+            (outside / "secret.txt").write_text("x", encoding="utf-8")
+            d = tmp / "skill"
+            d.mkdir()
+            (d / "SKILL.md").write_text("---\nname: x\ndescription: d\n---\nbody\n", encoding="utf-8")
+            try:
+                (d / "link").symlink_to(outside, target_is_directory=True)
+            except OSError:
+                self.skipTest("cannot create symlink")
+            with self.assertRaises(MOD.IntegrityError):
+                MOD.collect_files(d)
 
 
 class TestInstaller(unittest.TestCase):
@@ -149,13 +258,16 @@ class TestInstaller(unittest.TestCase):
     def _skills(self) -> Path:
         return self.home / "skills"
 
+    def _install(self, *args: str, check: bool = True) -> subprocess.CompletedProcess:
+        return run("install", *args, dsh_home=self.home, check=check)
+
     def test_dry_run_writes_nothing(self) -> None:
         proc = run("install", "--mode", "full", "--dry-run", dsh_home=self.home)
         self.assertIn("[dry-run]", proc.stdout)
         self.assertFalse(self._skills().exists())
 
     def test_install_full_and_verify(self) -> None:
-        run("install", "--mode", "full", "--no-backup", dsh_home=self.home)
+        self._install("--mode", "full", "--no-backup")
         installed = sorted(p.name for p in self._skills().iterdir() if p.is_dir())
         self.assertEqual(len(installed), 15)
         self.assertIn("academic-paper", installed)
@@ -166,41 +278,139 @@ class TestInstaller(unittest.TestCase):
         self.assertEqual(len(report["skills"]), 15)
         self.assertTrue(all(s["status"] == "ok" for s in report["skills"]))
 
+    def test_installed_copies_carry_licenses(self) -> None:
+        self._install("--mode", "full", "--no-backup")
+        for name in ("academic-paper", "scientific-writing", "venue-templates", "research-stack"):
+            d = self._skills() / name
+            for fname in ("NOTICE.md", "LICENSE.txt", "DSH-PORT.md"):
+                self.assertTrue((d / fname).is_file(), f"{name}: {fname}")
+        cc = (self._skills() / "academic-paper" / "LICENSE.txt").read_text(encoding="utf-8")
+        self.assertIn("NonCommercial", cc)
+        self.assertTrue((self._skills() / "venue-templates" / "NOTICE-LPPL.md").is_file())
+
     def test_install_idempotent(self) -> None:
-        run("install", "--mode", "minimal", "--no-backup", dsh_home=self.home)
-        proc = run("install", "--mode", "minimal", dsh_home=self.home)
-        self.assertIn("unchanged", proc.stdout.replace("(skipped)", ""))
+        self._install("--mode", "minimal", "--no-backup")
+        proc = self._install("--mode", "minimal")
+        self.assertIn("unchanged", proc.stdout)
         run("verify", "--require-all", "--only", "research-stack", dsh_home=self.home)
 
+    def test_install_only_deduplicates(self) -> None:
+        proc = self._install("--only", "research-stack,research-stack", "--no-backup")
+        self.assertIn("installed: research-stack", proc.stdout)
+        self.assertTrue((self._skills() / "research-stack").is_dir())
+
+    def test_only_and_exclude_are_mutually_exclusive(self) -> None:
+        proc = self._install("--only", "research-stack", "--exclude", "research-stack", "--dry-run", check=False)
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("mutually exclusive", proc.stderr)
+
     def test_verify_detects_tampering(self) -> None:
-        run("install", "--only", "scientific-writing", "--no-backup", dsh_home=self.home)
+        self._install("--only", "scientific-writing", "--no-backup")
         target = self._skills() / "scientific-writing" / "SKILL.md"
         target.write_text(target.read_text(encoding="utf-8") + "\ntampered\n", encoding="utf-8")
         proc = run("verify", "--only", "scientific-writing", dsh_home=self.home, check=False)
         self.assertEqual(proc.returncode, 1)
         self.assertIn("hash mismatch", proc.stdout)
 
+    def test_verify_ignores_runtime_artifacts(self) -> None:
+        self._install("--only", "research-stack", "--no-backup")
+        pycache = self._skills() / "research-stack" / "__pycache__"
+        pycache.mkdir()
+        (pycache / "x.pyc").write_bytes(b"\x00")
+        run("verify", "--require-all", "--only", "research-stack", dsh_home=self.home)
+
+    def test_verify_reports_unknown_skill_dirs(self) -> None:
+        self._install("--only", "research-stack", "--no-backup")
+        extra = self._skills() / "some-other-skill"
+        extra.mkdir()
+        proc = run("verify", "--json", dsh_home=self.home)
+        report = json.loads(proc.stdout)
+        self.assertIn("some-other-skill", report["unknown"])
+
     def test_reinstall_replaces_drifted_with_backup(self) -> None:
-        run("install", "--only", "scientific-writing", "--no-backup", dsh_home=self.home)
+        self._install("--only", "scientific-writing", "--no-backup")
         target = self._skills() / "scientific-writing" / "SKILL.md"
         target.write_text("---\nname: scientific-writing\ndescription: broken\n---\nbody\n", encoding="utf-8")
-        proc = run("install", "--only", "scientific-writing", dsh_home=self.home)
+        proc = self._install("--only", "scientific-writing")
         self.assertIn("installed:", proc.stdout)
         backups = list((self.home / "skills-backup").glob("*/scientific-writing"))
         self.assertTrue(backups, "expected a backup of the replaced skill")
         run("verify", "--require-all", "--only", "scientific-writing", dsh_home=self.home)
 
     def test_uninstall_keeps_backup(self) -> None:
-        run("install", "--only", "research-stack", "--no-backup", dsh_home=self.home)
+        self._install("--only", "research-stack", "--no-backup")
         run("uninstall", "--names", "research-stack", dsh_home=self.home)
         self.assertFalse((self._skills() / "research-stack").exists())
         backups = list((self.home / "skills-backup").glob("*/research-stack"))
         self.assertTrue(backups)
 
     def test_uninstall_keep_does_not_delete(self) -> None:
-        run("install", "--only", "research-stack", "--no-backup", dsh_home=self.home)
+        self._install("--only", "research-stack", "--no-backup")
         run("uninstall", "--names", "research-stack", "--keep", dsh_home=self.home)
         self.assertTrue((self._skills() / "research-stack").is_dir())
+
+    def test_uninstall_rejects_path_traversal(self) -> None:
+        self._install("--only", "research-stack", "--no-backup")
+        victim = self.home / "victim"
+        victim.mkdir()
+        (victim / "keep.txt").write_text("keep", encoding="utf-8")
+        evil_names = ["..", "../victim", "..\\victim", str(victim), "a/b", "..\\..\\victim"]
+        for evil in evil_names:
+            with self.subTest(name=evil):
+                proc = run("uninstall", "--names", evil, "--force", "--no-backup", dsh_home=self.home, check=False)
+                self.assertEqual(proc.returncode, 2, f"{evil}: {proc.stdout} {proc.stderr}")
+                self.assertTrue(victim.is_dir(), f"{evil}: victim directory was removed")
+                self.assertTrue((victim / "keep.txt").is_file(), f"{evil}: victim contents removed")
+        self.assertTrue((self._skills() / "research-stack").is_dir())
+
+    def test_failed_swap_rolls_back_without_backup(self) -> None:
+        self._install("--only", "scientific-writing", "--no-backup")
+        target = self._skills() / "scientific-writing" / "SKILL.md"
+        original = target.read_bytes()
+        target.write_bytes(original + b"\ntampered\n")
+        pre_install = target.read_bytes()
+        real_replace = os.replace
+
+        def flaky_replace(src, dst):
+            if str(dst).replace("\\", "/").endswith("citation-management"):
+                raise RuntimeError("simulated failure")
+            return real_replace(src, dst)
+
+        argv = [
+            "install", "--only", "scientific-writing,citation-management",
+            "--no-backup", "--dsh-home", str(self.home),
+        ]
+        with mock.patch("os.replace", side_effect=flaky_replace):
+            with self.assertRaises(RuntimeError):
+                MOD.main(argv)
+        # rollback restored the pre-install version and did not leave a half install
+        self.assertTrue((self._skills() / "scientific-writing").is_dir())
+        self.assertFalse((self._skills() / "citation-management").exists())
+        self.assertEqual((self._skills() / "scientific-writing" / "SKILL.md").read_bytes(), pre_install)
+
+    def test_failed_swap_rolls_back_with_backup(self) -> None:
+        self._install("--only", "scientific-writing", "--no-backup")
+        target = self._skills() / "scientific-writing" / "SKILL.md"
+        original = target.read_bytes()
+        target.write_bytes(original + b"\ntampered\n")
+        pre_install = target.read_bytes()
+        real_replace = os.replace
+
+        def flaky_replace(src, dst):
+            if str(dst).replace("\\", "/").endswith("citation-management"):
+                raise RuntimeError("simulated failure")
+            return real_replace(src, dst)
+
+        argv = [
+            "install", "--only", "scientific-writing,citation-management",
+            "--dsh-home", str(self.home),
+        ]
+        with mock.patch("os.replace", side_effect=flaky_replace):
+            with self.assertRaises(RuntimeError):
+                MOD.main(argv)
+        self.assertTrue((self._skills() / "scientific-writing").is_dir())
+        self.assertFalse((self._skills() / "citation-management").exists())
+        self.assertEqual((self._skills() / "scientific-writing" / "SKILL.md").read_bytes(), pre_install)
 
     def test_missing_skill_is_warning_unless_require_all(self) -> None:
         proc = run("verify", dsh_home=self.home)
@@ -210,19 +420,63 @@ class TestInstaller(unittest.TestCase):
         self.assertEqual(proc.returncode, 1)
 
     def test_unknown_skill_rejected(self) -> None:
-        proc = run("install", "--only", "not-a-skill", dsh_home=self.home, check=False)
+        proc = self._install("--only", "not-a-skill", "--dry-run", check=False)
         self.assertEqual(proc.returncode, 2)
         self.assertIn("unknown skill", proc.stderr + proc.stdout)
 
-    def test_refuses_to_install_into_repository(self) -> None:
+    def test_refuses_to_overwrite_payload_directory(self) -> None:
         proc = run("install", "--only", "research-stack", "--dsh-home", str(REPO), check=False)
         self.assertNotEqual(proc.returncode, 0)
+
+    def test_doctor_is_read_only(self) -> None:
+        missing = self.home / "not-created"
+        proc = run("doctor", "--dsh-home", str(missing), check=False)
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertFalse(missing.exists(), "doctor must not create the DSH home")
+        self.assertIn("does not create", proc.stdout)
 
     def test_presets_are_subset_of_full(self) -> None:
         lock = json.loads(LOCK.read_text(encoding="utf-8"))
         full = set(lock["presets"]["full"])
         for preset in ("minimal", "writing"):
             self.assertTrue(set(lock["presets"][preset]) <= full, preset)
+
+
+class TestBuildLock(unittest.TestCase):
+    def test_skill_files_ignore_runtime_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td) / "s"
+            (d / "__pycache__").mkdir(parents=True)
+            (d / "SKILL.md").write_text("---\nname: s\ndescription: d\n---\nbody\n", encoding="utf-8")
+            (d / "__pycache__" / "x.pyc").write_bytes(b"\x00")
+            (d / ".DS_Store").write_bytes(b"\x00")
+            files = BL.skill_files(d)
+            self.assertEqual([f["path"] for f in files], ["SKILL.md"])
+
+    def test_from_installed_failure_leaves_committed_files_untouched(self) -> None:
+        # Work on a throwaway copy of the repo; remove one plain skill so the
+        # build must fail *before* writing the archive/lock.
+        with tempfile.TemporaryDirectory(prefix="repo-copy-") as td:
+            copy = Path(td) / "repo"
+            shutil.copytree(
+                REPO,
+                copy,
+                ignore=shutil.ignore_patterns(".git", "__pycache__", "*.pyc", "skills-backup"),
+            )
+            tar = copy / "vendor" / "ars-dsh-v3.24.4-d103b100.tar.gz"
+            lock = copy / "manifests" / "skills.lock.json"
+            tar_before = tar.read_bytes()
+            lock_before = lock.read_bytes()
+            shutil.rmtree(copy / "skills" / "research-stack")
+            proc = run_cmd(
+                [sys.executable, str(copy / "tools" / "build_lock.py"), "--from-installed",
+                 "--dsh-home", str(Path.home() / ".dsh")],
+                check=False,
+                cwd=copy,
+            )
+            self.assertNotEqual(proc.returncode, 0)
+            self.assertEqual(tar.read_bytes(), tar_before, "archive must not be partially rewritten")
+            self.assertEqual(lock.read_bytes(), lock_before, "lock must not be partially rewritten")
 
 
 if __name__ == "__main__":

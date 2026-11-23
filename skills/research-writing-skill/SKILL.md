@@ -2,13 +2,13 @@
 name: research-writing-skill
 description: Chinese-first research paper writing, revision, polishing, section drafting, rebuttal, peer-review response, thesis prose improvement, and manuscript argument planning. Use when the user asks to write or revise论文正文, abstracts, introductions, methods, results, discussion, conclusions, related work, responses to reviewers, LaTeX/Overleaf text, or academic prose. Preserve formulas, English paper titles, terms, citations, and measured results.
 ---
-
 > **DSH 移植说明 / DSH port note**（非上游正文，仅为运行适配）
 >
 > - 工具名映射 / tool mapping: `Read`→`read`, `Write`→`write`, `Edit`→`edit`, `Grep`→`grep`, `Glob`→`glob`, `Bash`→`pwsh`, `WebFetch`→`web_fetch`, `Task`/agents→`subagent`, `AskUserQuestion`→`ask_user_question`.
 > - Claude Code 专属的 slash commands、hooks、MCP server、`allowed-tools` 在 DSH 中不存在；遇到时按本文件的方法论执行，并使用当前会话可用的工具。
 > - 上游正文中的 `$ARGUMENTS` 只是 Claude Code 的占位符，DSH 不会替换；任务参数请取用户当前消息。
 > - 技能目录内的 `references/`、`scripts/`、`shared/` 等相对路径资源已随目录安装，可直接用 `read` / `pwsh` 访问。
+> - 版权、许可证原文与修改说明见同目录 `NOTICE.md`、`LICENSE.txt`、`DSH-PORT.md`。
 > - 来源 / source: https://github.com/zLanqing/codex-claude-academic-skills ｜ 许可证 / license: MIT ｜ commit: `7ed6377f0efb6a38951b48ef03b19d996e454b1f` ｜ 导入: 2026-11-23
 
 # Research Writing Skill

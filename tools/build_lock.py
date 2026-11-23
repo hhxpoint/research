@@ -3,16 +3,16 @@
 
 Maintainer tool. Two modes:
 
-  # first build on a machine that already has the skills installed in DSH
+  # on a machine whose $DSH_HOME/skills contains the 5 ARS skills:
   python tools/build_lock.py --from-installed
 
-  # verification / rebuild purely from what is committed in this repo
+  # verification / rebuild purely from what is committed in this repo:
   python tools/build_lock.py --check
 
 The lock file `manifests/skills.lock.json` records, for every skill:
 
   name, source, category, license, description (from SKILL.md),
-  and the sha256 of every installed file.
+  and the sha256 of every packaged file.
 
 Skill payloads live in two places:
 
@@ -22,6 +22,17 @@ Skill payloads live in two places:
 
 Both are byte-identical to what `tools/dsh_skills.py install` puts into
 `$DSH_HOME/skills/<name>/`.
+
+Robustness rules implemented here:
+
+  * runtime artefacts (`__pycache__/`, `*.pyc|pyo`, `.DS_Store`, `Thumbs.db`,
+    `.git`) are never packaged or hashed;
+  * the tarball is built in memory, validated, and only then written
+    atomically together with the lock file - a failure leaves the committed
+    files untouched;
+  * `--check` verifies the archive hash *and* that its member set is exactly
+    the set recorded in the lock, then rebuilds the lock from repo + archive
+    and compares canonically.
 """
 from __future__ import annotations
 
@@ -45,6 +56,11 @@ DEFAULT_DSH_HOME = Path(os.environ.get("DSH_HOME") or (Path.home() / ".dsh"))
 SCHEMA_VERSION = 1
 GENERATED_AT = "2026-11-23"
 
+# Runtime artefacts ignored on both build and check (never packaged).
+IGNORED_DIR_NAMES = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache"}
+IGNORED_FILE_SUFFIXES = (".pyc", ".pyo")
+IGNORED_FILE_NAMES = {".DS_Store", "Thumbs.db", "desktop.ini"}
+
 SOURCES = {
     "ars": {
         "repo": "https://github.com/Imbad0202/academic-research-skills",
@@ -59,7 +75,7 @@ SOURCES = {
         "commit": "c21d13b3cc2894680229ba9959a53281acb9200e",
         "license": "MIT",
         "licenseFile": "vendor/licenses/K-Dense-scientific-agent-skills-MIT.txt",
-        "note": "",
+        "note": "venue-templates 内含 Elsevier elsarticle 资产（LPPL 1.3），见 THIRD-PARTY.md。",
     },
     "aris": {
         "repo": "https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep",
@@ -84,10 +100,10 @@ SOURCES = {
     },
     "local": {
         "repo": "https://github.com/hhxpoint/research",
-        "commit": "HEAD",
+        "commit": "self",
         "license": "MIT",
         "licenseFile": "LICENSE",
-        "note": "本仓库原创技能。",
+        "note": "本仓库原创技能，无上游 commit（commit=self）。",
     },
 }
 
@@ -142,6 +158,10 @@ PRESETS = {
 }
 
 
+def sha256_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as f:
@@ -150,59 +170,50 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def safe_extractall(tar: tarfile.TarFile, dest: Path) -> None:
-    """Extract a tarball while rejecting absolute paths, traversal and links."""
-    members = []
-    for m in tar.getmembers():
-        p = Path(m.name)
-        if p.is_absolute() or ".." in p.parts or m.issym() or m.islnk():
-            raise SystemExit(f"unsafe tar member: {m.name!r}")
-        members.append(m)
-    dest = dest.resolve()
-    for m in members:
-        target = (dest / m.name).resolve()
-        if target != dest and dest not in target.parents:
-            raise SystemExit(f"unsafe tar member path: {m.name!r}")
-    tar.extractall(dest, members=members)
+def is_ignored(rel: str) -> bool:
+    parts = rel.split("/")
+    if any(part in IGNORED_DIR_NAMES for part in parts[:-1]):
+        return True
+    name = parts[-1]
+    return name in IGNORED_FILE_NAMES or name.endswith(IGNORED_FILE_SUFFIXES)
+
+
+def payload_files(root: Path) -> list[Path]:
+    """Sorted list of packaged files under root, excluding runtime artefacts."""
+    result = []
+    for p in sorted(root.rglob("*"), key=lambda x: x.relative_to(root).as_posix()):
+        rel = p.relative_to(root).as_posix()
+        if is_ignored(rel):
+            continue
+        if p.is_symlink():
+            raise SystemExit(f"symbolic links are not allowed: {p}")
+        if p.is_file():
+            result.append(p)
+    return result
+
+
+def skill_files(skill_dir: Path) -> list[dict]:
+    files = []
+    for p in payload_files(skill_dir):
+        rel = p.relative_to(skill_dir).as_posix()
+        files.append({"path": rel, "sha256": sha256_file(p), "bytes": p.stat().st_size})
+    if not files:
+        raise SystemExit(f"empty skill dir: {skill_dir}")
+    return files
 
 
 def parse_frontmatter(text: str) -> dict:
     import yaml  # local import keeps `--help` working without pyyaml
 
     if not text.startswith("---"):
-        raise ValueError("SKILL.md does not start with '---'")
+        raise SystemExit("SKILL.md does not start with '---'")
     end = text.find("\n---", 3)
     if end < 0:
-        raise ValueError("unterminated frontmatter")
+        raise SystemExit("unterminated frontmatter")
     data = yaml.safe_load(text[3:end])
     if not isinstance(data, dict):
-        raise ValueError("frontmatter is not a mapping")
+        raise SystemExit("frontmatter is not a mapping")
     return data
-
-
-def skill_files(skill_dir: Path) -> list[dict]:
-    files = []
-    # Sort by the POSIX-relative path string, not by OS-specific Path ordering,
-    # so the lock file is byte-identical when rebuilt on Windows and Linux.
-    paths = sorted(
-        (p for p in skill_dir.rglob("*") if p.is_file()),
-        key=lambda p: p.relative_to(skill_dir).as_posix(),
-    )
-    for p in paths:
-        rel = p.relative_to(skill_dir).as_posix()
-        files.append({"path": rel, "sha256": sha256_file(p), "bytes": p.stat().st_size})
-    if not files:
-        raise ValueError(f"empty skill dir: {skill_dir}")
-    return files
-
-
-def canonical_lock(lock: dict) -> dict:
-    """Return a comparison form with order-insensitive file lists."""
-    result = json.loads(json.dumps(lock))
-    for skill in result.get("skills", []):
-        if isinstance(skill.get("files"), list):
-            skill["files"] = sorted(skill["files"], key=lambda f: f.get("path", ""))
-    return result
 
 
 def read_skill_meta(skill_dir: Path) -> tuple[dict, str]:
@@ -211,20 +222,24 @@ def read_skill_meta(skill_dir: Path) -> tuple[dict, str]:
     name = str(meta.get("name") or "")
     desc = str(meta.get("description") or "").strip()
     if not name:
-        raise ValueError(f"{skill_dir}: missing name")
+        raise SystemExit(f"{skill_dir}: missing name")
     if not desc:
-        raise ValueError(f"{skill_dir}: missing description")
+        raise SystemExit(f"{skill_dir}: missing description")
     return meta, " ".join(desc.split())
 
 
-def build_ars_tarball(src_root: Path, dest: Path) -> str:
+def iter_skill_dirs(root: Path) -> list[Path]:
+    return [d for d in sorted(root.iterdir(), key=lambda p: p.name) if d.is_dir()]
+
+
+def build_ars_tarball_bytes(src_root: Path) -> bytes:
     """Deterministic tar.gz of the ARS skill dirs (as installed in DSH)."""
     members: list[Path] = []
     for name in ARS_SKILLS:
         d = src_root / name
         if not (d / "SKILL.md").is_file():
-            raise SystemExit(f"missing source skill: {d}")
-        members.extend(sorted(p for p in d.rglob("*") if p.is_file()))
+            raise SystemExit(f"missing installed ARS skill: {d}")
+        members.extend(payload_files(d))
     members.sort(key=lambda p: p.relative_to(src_root).as_posix())
 
     buf = io.BytesIO()
@@ -240,45 +255,53 @@ def build_ars_tarball(src_root: Path, dest: Path) -> str:
                 info.uname = info.gname = ""
                 with p.open("rb") as f:
                     tar.addfile(info, f)
-
-    data = buf.getvalue()
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    tmp = dest.with_suffix(dest.suffix + ".tmp")
-    tmp.write_bytes(data)
-    tmp.replace(dest)
-    return hashlib.sha256(data).hexdigest()
+    return buf.getvalue()
 
 
-def read_from_installed(dsh_home: Path) -> dict[str, Path]:
-    root = dsh_home / "skills"
-    srcs: dict[str, Path] = {}
-    for name in ARS_SKILLS:
-        d = root / name
-        if not (d / "SKILL.md").is_file():
-            raise SystemExit(f"missing installed skill: {d}")
-        srcs[name] = d
-    return srcs
+def extract_bytes(data: bytes, dest: Path) -> None:
+    with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as tar:
+        members = []
+        dest_resolved = dest.resolve()
+        for m in tar.getmembers():
+            path = Path(m.name)
+            if path.is_absolute() or ".." in path.parts:
+                raise SystemExit(f"unsafe archive member: {m.name!r}")
+            if m.issym() or m.islnk() or not (m.isfile() or m.isdir()):
+                raise SystemExit(f"unsupported archive member: {m.name!r}")
+            target = (dest_resolved / m.name).resolve()
+            if target != dest_resolved and dest_resolved not in target.parents:
+                raise SystemExit(f"unsafe archive member path: {m.name!r}")
+            members.append(m)
+        tar.extractall(dest, members=members)
 
 
-def gather_skill_dirs(from_installed: dict[str, Path] | None) -> dict[str, Path]:
-    """Return name -> directory containing the installed form of each skill."""
+def repo_skill_dirs() -> dict[str, Path]:
     dirs: dict[str, Path] = {}
-    for name, (source, _category, mode) in SKILL_SPECS.items():
-        if mode == "tar":
-            if from_installed is None:
-                raise SystemExit(
-                    "repo-only mode cannot read tar skills yet; run --from-installed once"
-                )
-            dirs[name] = from_installed[name]
+    for name, (_source, _category, mode) in SKILL_SPECS.items():
+        if mode != "copy":
+            continue
+        d = SKILLS_DIR / name
+        if not (d / "SKILL.md").is_file():
+            raise SystemExit(f"missing repo skill: {d}")
+        dirs[name] = d
+    return dirs
+
+
+def repo_skill_dirs_checked(problems: list[str]) -> dict[str, Path]:
+    """Non-throwing variant used by --check so all issues are reported at once."""
+    dirs: dict[str, Path] = {}
+    for name, (_source, _category, mode) in SKILL_SPECS.items():
+        if mode != "copy":
+            continue
+        d = SKILLS_DIR / name
+        if not (d / "SKILL.md").is_file():
+            problems.append(f"missing repo skill: {d}")
         else:
-            d = SKILLS_DIR / name
-            if not (d / "SKILL.md").is_file():
-                raise SystemExit(f"missing repo skill: {d}")
             dirs[name] = d
     return dirs
 
 
-def build_lock(skill_dirs: dict[str, Path], ars_tar: Path | None) -> dict:
+def build_lock(skill_dirs: dict[str, Path], archive_sha: str, archive_bytes: int) -> dict:
     skills = []
     for name in sorted(SKILL_SPECS):
         source, category, mode = SKILL_SPECS[name]
@@ -286,20 +309,18 @@ def build_lock(skill_dirs: dict[str, Path], ars_tar: Path | None) -> dict:
         meta, desc = read_skill_meta(d)
         if meta.get("name") != name:
             raise SystemExit(f"{name}: frontmatter name mismatch: {meta.get('name')!r}")
-        entry = {
-            "name": name,
-            "source": source,
-            "category": category,
-            "mode": mode,
-            "license": SOURCES[source]["license"],
-            "description": desc,
-            "files": skill_files(d),
-        }
-        if mode == "tar":
-            entry["archivePath"] = f'{name}/SKILL.md'
-        skills.append(entry)
-
-    lock = {
+        skills.append(
+            {
+                "name": name,
+                "source": source,
+                "category": category,
+                "mode": mode,
+                "license": SOURCES[source]["license"],
+                "description": desc,
+                "files": skill_files(d),
+            }
+        )
+    return {
         "schemaVersion": SCHEMA_VERSION,
         "generatedAt": GENERATED_AT,
         "repo": "https://github.com/hhxpoint/research",
@@ -316,8 +337,8 @@ def build_lock(skill_dirs: dict[str, Path], ars_tar: Path | None) -> dict:
                 **(
                     {
                         "archive": ARS_TARBALL.relative_to(REPO_ROOT).as_posix(),
-                        "archiveSha256": sha256_file(ARS_TARBALL),
-                        "archiveBytes": ARS_TARBALL.stat().st_size,
+                        "archiveSha256": archive_sha,
+                        "archiveBytes": archive_bytes,
                     }
                     if sid == "ars"
                     else {}
@@ -327,93 +348,190 @@ def build_lock(skill_dirs: dict[str, Path], ars_tar: Path | None) -> dict:
         },
         "skills": skills,
     }
-    return lock
 
 
-def write_lock(lock: dict) -> None:
-    text = json.dumps(lock, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-    tmp = LOCK_PATH.with_suffix(".json.tmp")
-    LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
-    tmp.write_text(text, encoding="utf-8")
-    tmp.replace(LOCK_PATH)
+def canonical_lock(lock: dict) -> dict:
+    result = json.loads(json.dumps(lock))
+    for skill in result.get("skills", []):
+        if isinstance(skill.get("files"), list):
+            skill["files"] = sorted(skill["files"], key=lambda f: f.get("path", ""))
+    return result
+
+
+def write_atomic(path: Path, data: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_bytes(data)
+    tmp.replace(path)
+
+
+def lock_bytes(lock: dict) -> bytes:
+    return (json.dumps(lock, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
+
+
+def own_copy_checks(lock: dict) -> list[str]:
+    problems: list[str] = []
+    for entry in lock["skills"]:
+        if entry["mode"] != "copy":
+            continue
+        skill_dir = REPO_ROOT / "skills" / entry["name"]
+        for f in entry["files"]:
+            p = skill_dir / f["path"]
+            if not p.is_file():
+                problems.append(f"{entry['name']}: missing {f['path']}")
+            elif sha256_file(p) != f["sha256"]:
+                problems.append(f"{entry['name']}: hash mismatch {f['path']}")
+    return problems
+
+
+def cmd_from_installed(args) -> int:
+    dsh_home = Path(args.dsh_home).expanduser().resolve()
+    src_root = dsh_home / "skills"
+    # Validate every source before touching any committed file.
+    copy_dirs = repo_skill_dirs()
+    for name in ARS_SKILLS:
+        if not (src_root / name / "SKILL.md").is_file():
+            raise SystemExit(f"missing installed ARS skill: {src_root / name}")
+
+    tar_bytes = build_ars_tarball_bytes(src_root)
+    tar_sha = sha256_bytes(tar_bytes)
+    print(f"built ARS archive in memory: {len(tar_bytes)} B sha256={tar_sha}")
+
+    with tempfile.TemporaryDirectory(prefix="research-build-") as td:
+        extracted = Path(td)
+        extract_bytes(tar_bytes, extracted)
+        names = {d.name for d in iter_skill_dirs(extracted)}
+        if names != set(ARS_SKILLS):
+            raise SystemExit(f"archive skill set mismatch: {sorted(names)}")
+        dirs = dict(copy_dirs)
+        for name in ARS_SKILLS:
+            dirs[name] = extracted / name
+        lock = build_lock(dirs, tar_sha, len(tar_bytes))
+        problems = own_copy_checks(lock)
+        if problems:
+            raise SystemExit("refusing to write lock, repo content problems:\n  " + "\n  ".join(problems))
+        # final self-consistency: archive members == lock paths
+        expected = {
+            f"{e['name']}/{f['path']}"
+            for e in lock["skills"]
+            if e["mode"] == "tar"
+            for f in e["files"]
+        }
+        actual = {p.relative_to(extracted).as_posix() for p in extracted.rglob("*") if p.is_file()}
+        if expected != actual:
+            raise SystemExit(
+                f"archive member set mismatch: missing={sorted(expected-actual)[:5]} "
+                f"extra={sorted(actual-expected)[:5]}"
+            )
+
+    write_atomic(ARS_TARBALL, tar_bytes)
+    write_atomic(LOCK_PATH, lock_bytes(lock))
+    print(f"wrote {ARS_TARBALL.relative_to(REPO_ROOT)} and {LOCK_PATH.relative_to(REPO_ROOT)} "
+          f"with {len(lock['skills'])} skills")
+    return 0
+
+
+def cmd_check(args) -> int:
+    if not LOCK_PATH.is_file():
+        raise SystemExit(f"no lock file: {LOCK_PATH}")
+    committed = json.loads(LOCK_PATH.read_text(encoding="utf-8"))
+    problems: list[str] = []
+    ars = committed["sources"]["ars"]
+    tar_path = REPO_ROOT / ars["archive"]
+    if not tar_path.is_file():
+        print("CHECK FAILED")
+        print(f" - missing archive: {tar_path}")
+        return 1
+    actual_sha = sha256_file(tar_path)
+    if actual_sha != ars["archiveSha256"]:
+        print("CHECK FAILED")
+        print(f" - archive sha256 mismatch: {actual_sha} != {ars['archiveSha256']}")
+        return 1
+    with tempfile.TemporaryDirectory(prefix="research-check-") as td:
+        tmp = Path(td)
+        try:
+            extract_bytes(tar_path.read_bytes(), tmp)
+        except SystemExit as exc:
+            print("CHECK FAILED")
+            print(f" - {exc}")
+            return 1
+        expected = {
+            f"{e['name']}/{f['path']}"
+            for e in committed["skills"]
+            if e["mode"] == "tar"
+            for f in e["files"]
+        }
+        actual = {p.relative_to(tmp).as_posix() for p in tmp.rglob("*") if p.is_file()}
+        if expected != actual:
+            problems.append(
+                f"archive member set mismatch: missing={sorted(expected - actual)[:5]} "
+                f"extra={sorted(actual - expected)[:5]}"
+            )
+        try:
+            names = {d.name for d in iter_skill_dirs(tmp)}
+        except OSError as exc:
+            problems.append(f"cannot list archive extraction: {exc}")
+            names = set()
+        if names != set(ARS_SKILLS):
+            problems.append(f"archive skill set mismatch: {sorted(names)}")
+        dirs = repo_skill_dirs_checked(problems)
+        for name in ARS_SKILLS:
+            dirs[name] = tmp / name
+        if problems:
+            print("CHECK FAILED")
+            for p in problems:
+                print(" -", p)
+            return 1
+        rebuilt = build_lock(dirs, actual_sha, tar_path.stat().st_size)
+        if json.dumps(canonical_lock(rebuilt), sort_keys=True) != json.dumps(
+            canonical_lock(committed), sort_keys=True
+        ):
+            details = []
+            by_name = {s["name"]: s for s in canonical_lock(rebuilt)["skills"]}
+            for skill in canonical_lock(committed)["skills"]:
+                other = by_name.get(skill["name"])
+                if other is None:
+                    details.append(f"{skill['name']}: missing from rebuilt content")
+                    continue
+                got = {f["path"]: f for f in other["files"]}
+                want = {f["path"]: f for f in skill["files"]}
+                for path in sorted(set(want) | set(got)):
+                    if got.get(path) != want.get(path):
+                        details.append(f"{skill['name']}: {path}")
+                        break
+            problems.append(
+                "lock file does not match repo content (run --from-installed and commit)"
+                + (f"; first differences: {details[:8]}" if details else "")
+            )
+    if problems:
+        print("CHECK FAILED")
+        for p in problems:
+            print(" -", p)
+        return 1
+    print("CHECK OK: lock, archive, and repo skills are consistent")
+    print(f"  skills: {len(committed['skills'])}")
+    print(f"  ars archive: {committed['sources']['ars']['archive']} "
+          f"sha256={committed['sources']['ars']['archiveSha256']}")
+    return 0
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--from-installed", action="store_true", help="read tar skills from $DSH_HOME/skills and rebuild the tarball")
-    ap.add_argument("--check", action="store_true", help="rebuild in memory and compare with the committed lock")
+    ap.add_argument("--from-installed", action="store_true",
+                    help="read ARS skills from $DSH_HOME/skills and rebuild archive + lock")
+    ap.add_argument("--check", action="store_true",
+                    help="rebuild from committed content and compare with the committed lock")
     ap.add_argument("--dsh-home", type=Path, default=DEFAULT_DSH_HOME)
     args = ap.parse_args()
     if args.from_installed == args.check:
         ap.error("choose exactly one of --from-installed / --check")
     if sys.version_info < (3, 10):
         raise SystemExit("python >= 3.10 required")
-
-    from_installed = read_from_installed(args.dsh_home) if args.from_installed else None
+    if not (REPO_ROOT / "skills").is_dir():
+        raise SystemExit(f"not a repository checkout: {REPO_ROOT}")
     if args.from_installed:
-        sha = build_ars_tarball(args.dsh_home / "skills", ARS_TARBALL)
-        print(f"ars tarball: {ARS_TARBALL.relative_to(REPO_ROOT)} ({ARS_TARBALL.stat().st_size} B) sha256={sha}")
-        # after writing the tarball, hash skills from the installed dirs
-        skill_dirs = gather_skill_dirs(from_installed)
-        lock = build_lock(skill_dirs, ARS_TARBALL)
-    else:
-        if not LOCK_PATH.is_file():
-            raise SystemExit(f"no lock file: {LOCK_PATH}")
-        committed = json.loads(LOCK_PATH.read_text(encoding="utf-8"))
-        # verify repo copy skills and the tarball against the committed lock
-        problems: list[str] = []
-        with tempfile.TemporaryDirectory(prefix="research-lock-") as td:
-            tmp = Path(td)
-            ars = committed["sources"]["ars"]
-            tar_path = REPO_ROOT / ars["archive"]
-            if not tar_path.is_file():
-                problems.append(f"missing archive: {tar_path}")
-            else:
-                if sha256_file(tar_path) != ars["archiveSha256"]:
-                    problems.append("archive sha256 mismatch")
-                with tarfile.open(tar_path, "r:gz") as tar:
-                    safe_extractall(tar, tmp)
-            dirs: dict[str, Path] = {}
-            for name, (source, _c, mode) in SKILL_SPECS.items():
-                if mode == "tar":
-                    dirs[name] = tmp / name
-                else:
-                    dirs[name] = SKILLS_DIR / name
-            rebuilt = build_lock(dirs, None)
-            if json.dumps(canonical_lock(rebuilt), sort_keys=True) != json.dumps(
-                canonical_lock(committed), sort_keys=True
-            ):
-                details = []
-                by_name = {s["name"]: s for s in canonical_lock(rebuilt)["skills"]}
-                for skill in canonical_lock(committed)["skills"]:
-                    name = skill["name"]
-                    other = by_name.get(name)
-                    if other is None:
-                        details.append(f"{name}: missing from rebuilt content")
-                        continue
-                    got = {f["path"]: f for f in other["files"]}
-                    want = {f["path"]: f for f in skill["files"]}
-                    for path in sorted(set(want) | set(got)):
-                        if got.get(path) != want.get(path):
-                            details.append(f"{name}: {path}")
-                            break
-                problems.append(
-                    "lock file does not match repo content (run --from-installed and commit)"
-                    + (f"; first differences: {details[:8]}" if details else "")
-                )
-        if problems:
-            print("CHECK FAILED")
-            for p in problems:
-                print(" -", p)
-            return 1
-        print("CHECK OK: lock, archive, and repo skills are consistent")
-        print(f"  skills: {len(committed['skills'])}")
-        print(f"  ars archive: {committed['sources']['ars']['archive']} sha256={committed['sources']['ars']['archiveSha256']}")
-        return 0
-
-    write_lock(lock)
-    print(f"wrote {LOCK_PATH.relative_to(REPO_ROOT)} with {len(lock['skills'])} skills")
-    return 0
+        return cmd_from_installed(args)
+    return cmd_check(args)
 
 
 if __name__ == "__main__":

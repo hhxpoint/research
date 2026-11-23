@@ -3,13 +3,13 @@ name: autoresearch
 description: "Autonomous iteration loop: modify, verify, keep/discard against any metric"
 version: 2.3.0
 ---
-
 > **DSH 移植说明 / DSH port note**（非上游正文，仅为运行适配）
 >
 > - 工具名映射 / tool mapping: `Read`→`read`, `Write`→`write`, `Edit`→`edit`, `Grep`→`grep`, `Glob`→`glob`, `Bash`→`pwsh`, `WebFetch`→`web_fetch`, `Task`/agents→`subagent`, `AskUserQuestion`→`ask_user_question`.
 > - Claude Code 专属的 slash commands、hooks、MCP server、`allowed-tools` 在 DSH 中不存在；遇到时按本文件的方法论执行，并使用当前会话可用的工具。
 > - 上游正文中的 `$ARGUMENTS` 只是 Claude Code 的占位符，DSH 不会替换；任务参数请取用户当前消息。
 > - 技能目录内的 `references/`、`scripts/`、`shared/` 等相对路径资源已随目录安装，可直接用 `read` / `pwsh` 访问。
+> - 版权、许可证原文与修改说明见同目录 `NOTICE.md`、`LICENSE.txt`、`DSH-PORT.md`。
 > - 来源 / source: https://github.com/uditgoenka/autoresearch ｜ 许可证 / license: MIT ｜ commit: `7bddd056dfd0b0ded8360588d8101b1ecb5c0baa` ｜ 导入: 2026-11-23
 
 # Autoresearch — Autonomous Goal-directed Iteration

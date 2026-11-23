@@ -12,7 +12,7 @@
 
 ```powershell
 python tools\dsh_skills.py doctor                 # 环境/锁文件/归档/DSH 目录体检
-python tools\dsh_skills.py install --mode full    # 安装全部 15 个（有备份/回滚）
+python tools\dsh_skills.py install --mode full    # 安装全部 15 个（有备份；事务失败自动回滚）
 python tools\dsh_skills.py verify --require-all   # 逐文件 sha256 + frontmatter 校验
 ```
 
@@ -46,7 +46,7 @@ python tools\dsh_skills.py verify        # 缺失只警告；被改动/被篡改
 
 状态含义：
 
-- `ok`：已安装且与锁文件逐字节一致；
+- `ok`：已安装且与锁文件逐字节一致（技能目录内的 `__pycache__/`、`*.pyc` 等运行时文件不参与比对）；
 - `drifted`：已安装但内容与锁文件不一致（可能被手动改过，或版本升级后未重装）；
 - `broken`：目录存在但无法校验（缺 SKILL.md 等）；
 - `absent`：未安装。
@@ -101,9 +101,13 @@ python tools\dsh_skills.py uninstall --names a,b,c --no-backup      # 删除且�
 - `install` 时：先校验归档 sha256 → 解压（拒绝绝对路径/`..`/链接）→ 按锁文件校验每个技能 →
   装配到临时目录 → 再原子换入；
 - `verify` 时：对已安装目录逐文件比对 sha256，并重新解析 frontmatter 检查 DSH 规则；
-- 任何一步失败都会以非 0 退出码结束，且不会留下半安装状态（安装阶段失败会回滚）。
+- 任何一步失败都会以非 0 退出码结束，且不会留下半安装状态：安装阶段会把已替换的技能回滚。
+  `--no-backup` 仍是事务性的（被替换副本先暂存），只是安装成功后不再保留备份。
+  进程被强制杀死时可能残留 `~/.dsh/.dsh-skills-staging-*` 临时目录，可安全删除。
 
-退出码：`0` 成功，`1` 校验失败，`2` 用法/配置错误，`3` 完整性错误。
+退出码：`0` 成功；`1` verify/selftest/doctor 检查失败（含已安装文件哈希不符）；
+`2` 用法或配置错误（参数非法、路径不可写等）；`3` 安装阶段的来源完整性错误
+（归档/载荷哈希不符、归档含不安全成员）。
 
 ## 排障
 
@@ -113,9 +117,10 @@ python tools\dsh_skills.py uninstall --names a,b,c --no-backup      # 删除且�
 | `missing ARS archive` / `sha256 mismatch` | 仓库文件被改动或未完整克隆（如 LFS/离线拷贝残缺）；重新 `git checkout -- vendor/` |
 | 安装成功但 DSH 里看不到技能 | ① `DSH_HOME` 指错；② 装到了项目级根而当前项目不是那个目录；③ 技能 frontmatter 不合法（用 `verify` 能看到具体原因）；④ DSH 用的是别的 profile |
 | `drifted` | 技能被手动修改或来自旧版本；`install --force` 重装即可，旧版本在 `skills-backup/` |
-| 模型不自动选某个技能 | 该技能可能带 `disable-model-invocation: true`（本仓库已移除）；或描述与任务不匹配 |
+| 模型不自动选某个技能 | 该技能可能带 `disable-model-invocation: true`（本仓库所有顶层 `SKILL.md` 已移除该键；`autoresearch/references/` 下保留的上游命令文件不参与 DSH 发现）；或描述与任务不匹配 |
 | `pip install pyyaml` 失败（公司网络） | 用内网源，或使用 DSH 自带的 Python 环境；安装器只依赖 PyYAML 一个第三方包 |
 | Windows 下 `os.replace` 报权限错误 | 关闭占用该目录的程序/编辑器后重试；安装器会回滚 |
+| `verify` 报 `UNKNOWN:` | `$DSH_HOME/skills` 下有不在本仓库清单里的技能目录（可能来自其他来源）；仅提示，不影响结果 |
 
 ## 离线 / 内网部署
 

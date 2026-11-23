@@ -30,3 +30,11 @@
 
 安装与校验方式见仓库根目录 `README.md`、`docs/install.md`；
 逐文件 sha256 见 `manifests/skills.lock.json`。
+
+每个 ARS 技能目录（仓库归档内与安装后相同）还包含：
+
+- `NOTICE.md`：上游作者署名（Cheng-I Wu）、固定 commit、CC BY-NC 4.0 许可证 URI、非商业声明、修改说明；
+- `LICENSE.txt`：CC BY-NC 4.0 完整许可证原文；
+- `DSH-PORT.md`：来源与逐项修改记录。
+
+`venue-templates`（K-Dense 技能）内含 Elsevier elsarticle 资产，按 LPPL 1.3c 单独披露，见该目录的 `NOTICE-LPPL.md`。

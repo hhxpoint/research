@@ -4,14 +4,14 @@ description: Analyze ML experiment results, compute statistics, generate compari
 argument-hint: "[results-path-or-description]"
 allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit
 ---
-
 > **DSH 移植说明 / DSH port note**（非上游正文，仅为运行适配）
 >
 > - 工具名映射 / tool mapping: `Read`→`read`, `Write`→`write`, `Edit`→`edit`, `Grep`→`grep`, `Glob`→`glob`, `Bash`→`pwsh`, `WebFetch`→`web_fetch`, `Task`/agents→`subagent`, `AskUserQuestion`→`ask_user_question`.
 > - Claude Code 专属的 slash commands、hooks、MCP server、`allowed-tools` 在 DSH 中不存在；遇到时按本文件的方法论执行，并使用当前会话可用的工具。
 > - 上游正文中的 `$ARGUMENTS` 只是 Claude Code 的占位符，DSH 不会替换；任务参数请取用户当前消息。
 > - 技能目录内的 `references/`、`scripts/`、`shared/` 等相对路径资源已随目录安装，可直接用 `read` / `pwsh` 访问。
-> - 来源 / source: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep ｜ 许可证 / license: MIT ｜ commit: `unpinned (jsDelivr @main)` ｜ 导入: 2026-11-23
+> - 版权、许可证原文与修改说明见同目录 `NOTICE.md`、`LICENSE.txt`、`DSH-PORT.md`。
+> - 来源 / source: https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep ｜ 许可证 / license: MIT ｜ commit: `4ba94ae2a1c1fbbb14858750dd8764cabf6c28bd` ｜ 导入: 2026-11-23
 
 # Analyze Experiment Results
 
