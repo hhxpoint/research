@@ -51,6 +51,16 @@
       "description": "12-agent academic paper writing pipeline. 11 modes (full/plan/outline/revision/revision-coach/abstract/lit-review/format-convert/citation-check/disclosure/rebuttal-audit). 6 paper types, 5 citation formats, bilingual abstracts, LaTeX/DOCX-via-Pandoc/PDF output. Style Calibration + Writing Quality Check + Anti-Patterns with IRON RULE markers. Triggers: write paper, academic paper, guide my paper, parse reviews, I got reviewer comments, revision roadmap, should we push back, conference rebuttal, grant panel response, audit my rebuttal, check my response draft, AI disclosure, check citations, citation check, check my references, verify references, look over the refs, 寫論文, 學術論文, 引導我寫論文, 審查意見, 我收到審查意見, 修訂路線圖, 評估回覆, 檢查引用, 引用檢查, 檢查參考文獻, 核對文獻, 논문 작성, 초록 작성, 논문 수정, 논문 계획을 도와줘, 심사 의견을 받았어, 심사 의견 반영, 답변서 점검, AI 사용 고지, 인용 확인, 인용 형식 검사, enmendar mi artículo, redactar artículo, guía mi artículo, analizar reseñas, auditar mi respuesta, verificar borrador de respuesta, verificar citas, divulgación de IA.",
       "files": [
         {
+          "bytes": 468,
+          "path": "DSH-PORT.md",
+          "sha256": "e45d17d02160563166b49c29b267e653ec9e329c2352d79c0c5509c5588142c6"
+        },
+        {
+          "bytes": 73124,
+          "path": "SKILL.md",
+          "sha256": "a21777d1adb0b5479abf425e7e8e7c2b8dffa22a5e43902a496336477567dadf"
+        },
+        {
           "bytes": 12131,
           "path": "agents/abstract_bilingual_agent.md",
           "sha256": "ac22eb3c47e5251d2052ec13489798c166b0c318c24ba851a62493a299598384"
@@ -109,11 +119,6 @@
           "bytes": 17607,
           "path": "agents/visualization_agent.md",
           "sha256": "c22ba5e209bf4901a81e8770657ff165e3996d451efa402dec0c2f3f3901bb22"
-        },
-        {
-          "bytes": 468,
-          "path": "DSH-PORT.md",
-          "sha256": "e45d17d02160563166b49c29b267e653ec9e329c2352d79c0c5509c5588142c6"
         },
         {
           "bytes": 21572,
@@ -351,6 +356,11 @@
           "sha256": "4e5d162f5ee64e52393720f0d47d204ea389d7d871649f234164329d4931caf2"
         },
         {
+          "bytes": 55955,
+          "path": "shared/contracts/README.md",
+          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
+        },
+        {
           "bytes": 18898,
           "path": "shared/contracts/activity/adjudication_activity_input.schema.json",
           "sha256": "631c3cdb06d7dfc757199af72925a2d508bec2d189cc7d9c5461a82d2cfda977"
@@ -746,11 +756,6 @@
           "sha256": "b23d1dae82ef383fae9ccbc269d2aa68ed73dd61a47c2a544c1d12e59c39c3f5"
         },
         {
-          "bytes": 55955,
-          "path": "shared/contracts/README.md",
-          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
-        },
-        {
           "bytes": 17378,
           "path": "shared/contracts/research_workflow/inquiry_branch_ledger.schema.json",
           "sha256": "6b88b75fb8f6350b7926738653006a32e7501fdae4d8b7eea63f3aaa26afed2d"
@@ -1086,11 +1091,6 @@
           "sha256": "f3b2ad57d8c22c10582d76210877b50504c2d4a96a71986197b702e258ffae5c"
         },
         {
-          "bytes": 73124,
-          "path": "SKILL.md",
-          "sha256": "a21777d1adb0b5479abf425e7e8e7c2b8dffa22a5e43902a496336477567dadf"
-        },
-        {
           "bytes": 4818,
           "path": "templates/bilingual_abstract_template.md",
           "sha256": "d050039e79f72057dd87a6163d046fb8d8ce65bd8d170ee9db04eb50dc17a03e"
@@ -1157,6 +1157,16 @@
       "description": "Multi-perspective academic paper review with dynamic reviewer personas. Runs a 5-seat, role-separated review panel (Journal-Fit Reviewer + 3 peer-review roles + Devil's Advocate) with field-specific expertise; role separation is not a claim of independent error processes. Supports full review, re-review (verification), quick assessment, methodology focus, Socratic guided, and calibration modes. Triggers on: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review, calibrate reviewer, reviewer calibration, measure reviewer accuracy, 審查論文, 論文審查, 模擬審查, 同儕審查, 幫我審這篇, 以審查人角度評估, 審查者校準, 논문 심사, 동료 심사, 모의 심사, 심사자 관점에서 평가, 심사자 보정, revisar artículo, revisión entre pares, revisión de manuscrito, informe de árbitro, revisa mi artículo, criticar artículo, simular revisión, revisión editorial, calibrar revisor.",
       "files": [
         {
+          "bytes": 486,
+          "path": "DSH-PORT.md",
+          "sha256": "ca667f1a6babd85e7db0774fc0ea0e2d9086f04e56876a95117c565c9cede5e2"
+        },
+        {
+          "bytes": 57327,
+          "path": "SKILL.md",
+          "sha256": "38023b73debd64f96133ef81e055d7f4e4bf3ad75cc7a5af1d9fc3e794269396"
+        },
+        {
           "bytes": 44698,
           "path": "agents/devils_advocate_reviewer_agent.md",
           "sha256": "3f39bad01d78a403da4318ed477acde13c3171ca61e96ee24c9404dade5ec1de"
@@ -1190,11 +1200,6 @@
           "bytes": 34502,
           "path": "agents/perspective_reviewer_agent.md",
           "sha256": "a99386515c1e9e5b73e91f3f9cd62f6ec3660f03e229371ad53531fa165cf007"
-        },
-        {
-          "bytes": 486,
-          "path": "DSH-PORT.md",
-          "sha256": "ca667f1a6babd85e7db0774fc0ea0e2d9086f04e56876a95117c565c9cede5e2"
         },
         {
           "bytes": 36011,
@@ -1322,6 +1327,11 @@
           "sha256": "4e5d162f5ee64e52393720f0d47d204ea389d7d871649f234164329d4931caf2"
         },
         {
+          "bytes": 55955,
+          "path": "shared/contracts/README.md",
+          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
+        },
+        {
           "bytes": 18898,
           "path": "shared/contracts/activity/adjudication_activity_input.schema.json",
           "sha256": "631c3cdb06d7dfc757199af72925a2d508bec2d189cc7d9c5461a82d2cfda977"
@@ -1717,11 +1727,6 @@
           "sha256": "b23d1dae82ef383fae9ccbc269d2aa68ed73dd61a47c2a544c1d12e59c39c3f5"
         },
         {
-          "bytes": 55955,
-          "path": "shared/contracts/README.md",
-          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
-        },
-        {
           "bytes": 17378,
           "path": "shared/contracts/research_workflow/inquiry_branch_ledger.schema.json",
           "sha256": "6b88b75fb8f6350b7926738653006a32e7501fdae4d8b7eea63f3aaa26afed2d"
@@ -2057,11 +2062,6 @@
           "sha256": "f3b2ad57d8c22c10582d76210877b50504c2d4a96a71986197b702e258ffae5c"
         },
         {
-          "bytes": 57327,
-          "path": "SKILL.md",
-          "sha256": "38023b73debd64f96133ef81e055d7f4e4bf3ad75cc7a5af1d9fc3e794269396"
-        },
-        {
           "bytes": 8191,
           "path": "templates/author_letter_template.md",
           "sha256": "77fba648037cd5073cccb060caee59e062f62b86686bb3bcfded5c162c312670"
@@ -2093,6 +2093,16 @@
       "description": "Orchestrator for the full academic research pipeline: research -> write -> integrity check -> review -> revise -> re-review -> re-revise -> final integrity check -> finalize. Coordinates deep-research, academic-paper, and academic-paper-reviewer into a seamless 10-stage workflow with mandatory, coverage-bounded integrity checks, two-stage peer review, and auditable quality-assurance artifacts. Triggers on: academic pipeline, research to paper, full paper workflow, paper pipeline, end-to-end paper, research-to-publication, complete paper workflow, 연구부터 논문까지, 연구 주제 설정부터 논문 완성까지, 논문 전체 워크플로, flujo de trabajo académico, investigación a artículo, flujo completo de artículo, pipeline de investigación completa, publicación de investigación, flujo de trabajo completo del artículo.",
       "files": [
         {
+          "bytes": 474,
+          "path": "DSH-PORT.md",
+          "sha256": "8f02e810b42de543529191b6d64f32ab116adf5fa85abc4c7b3097c6c690e19e"
+        },
+        {
+          "bytes": 61389,
+          "path": "SKILL.md",
+          "sha256": "699da384b845b45b641c6ad8884c0b54a85b27753202611bf5b8924cbda389bd"
+        },
+        {
           "bytes": 45398,
           "path": "agents/claim_ref_alignment_audit_agent.md",
           "sha256": "ae72a7f464a372ed507e3e36f8bd4808dd9d7f1aa1e47e5313eaaea6f730df41"
@@ -2116,11 +2126,6 @@
           "bytes": 27397,
           "path": "agents/state_tracker_agent.md",
           "sha256": "787b994b727235451ca885f5be51ce3590dca9fd7134c66f38ba6ac4287eca26"
-        },
-        {
-          "bytes": 474,
-          "path": "DSH-PORT.md",
-          "sha256": "8f02e810b42de543529191b6d64f32ab116adf5fa85abc4c7b3097c6c690e19e"
         },
         {
           "bytes": 18078,
@@ -2278,6 +2283,11 @@
           "sha256": "4e5d162f5ee64e52393720f0d47d204ea389d7d871649f234164329d4931caf2"
         },
         {
+          "bytes": 55955,
+          "path": "shared/contracts/README.md",
+          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
+        },
+        {
           "bytes": 18898,
           "path": "shared/contracts/activity/adjudication_activity_input.schema.json",
           "sha256": "631c3cdb06d7dfc757199af72925a2d508bec2d189cc7d9c5461a82d2cfda977"
@@ -2673,11 +2683,6 @@
           "sha256": "b23d1dae82ef383fae9ccbc269d2aa68ed73dd61a47c2a544c1d12e59c39c3f5"
         },
         {
-          "bytes": 55955,
-          "path": "shared/contracts/README.md",
-          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
-        },
-        {
           "bytes": 17378,
           "path": "shared/contracts/research_workflow/inquiry_branch_ledger.schema.json",
           "sha256": "6b88b75fb8f6350b7926738653006a32e7501fdae4d8b7eea63f3aaa26afed2d"
@@ -3013,11 +3018,6 @@
           "sha256": "f3b2ad57d8c22c10582d76210877b50504c2d4a96a71986197b702e258ffae5c"
         },
         {
-          "bytes": 61389,
-          "path": "SKILL.md",
-          "sha256": "699da384b845b45b641c6ad8884c0b54a85b27753202611bf5b8924cbda389bd"
-        },
-        {
           "bytes": 3813,
           "path": "templates/pipeline_status_template.md",
           "sha256": "9837a2a8be21fd0fc9d2abea0f06047eec28eec2cb2fb06e69351c39332d4845"
@@ -3056,6 +3056,11 @@
           "bytes": 648,
           "path": "DSH-PORT.md",
           "sha256": "c3eb2d30223e994014bb77671e5284cc371fc8e6594087477417c7f97fafcc2c"
+        },
+        {
+          "bytes": 11989,
+          "path": "SKILL.md",
+          "sha256": "f007cade9bcb78ac7b329ddb3193c10e173d2c64c43c3047e3e1262a7c74bb93"
         },
         {
           "bytes": 6529,
@@ -3126,11 +3131,6 @@
           "bytes": 4004,
           "path": "references/commands/ship.md",
           "sha256": "a46435669987c403fa573f395d2e96106255c316fd1701b55c211c835fbf6aa7"
-        },
-        {
-          "bytes": 11989,
-          "path": "SKILL.md",
-          "sha256": "f007cade9bcb78ac7b329ddb3193c10e173d2c64c43c3047e3e1262a7c74bb93"
         }
       ],
       "license": "MIT",
@@ -3143,6 +3143,16 @@
       "description": "Comprehensive citation management for academic research. Search OpenAlex, PubMed, and Google Scholar for papers, extract accurate metadata, validate citations, and generate properly formatted BibTeX entries. This skill should be used when you need to find papers, verify citation information, convert DOIs to BibTeX, or ensure reference accuracy in scientific writing.",
       "files": [
         {
+          "bytes": 409,
+          "path": "DSH-PORT.md",
+          "sha256": "2a1cc523687c7ceb104e4db7af91574e5e6eff04de85339ce84b198b847dee29"
+        },
+        {
+          "bytes": 17955,
+          "path": "SKILL.md",
+          "sha256": "b39fbdb5941bbb68ba977853ee3986b19b9a9e5aa9636e282f1144a08606d145"
+        },
+        {
           "bytes": 9305,
           "path": "assets/bibtex_template.bib",
           "sha256": "08e21647fa68cad1aa1658264798c7d24775ba89bfbd2723ea6bfe4b562e2be1"
@@ -3151,11 +3161,6 @@
           "bytes": 10434,
           "path": "assets/citation_checklist.md",
           "sha256": "ce7317f2983f8b7fd02949aad726ebd6188319c7e57c929fffe689d5ae18ce36"
-        },
-        {
-          "bytes": 409,
-          "path": "DSH-PORT.md",
-          "sha256": "2a1cc523687c7ceb104e4db7af91574e5e6eff04de85339ce84b198b847dee29"
         },
         {
           "bytes": 6712,
@@ -3251,11 +3256,6 @@
           "bytes": 28361,
           "path": "scripts/validate_citations.py",
           "sha256": "a08e8e0774287e9aca2bd87c3a66cd3dfc751018eafb6cdee37987e3f416d2b5"
-        },
-        {
-          "bytes": 17955,
-          "path": "SKILL.md",
-          "sha256": "b39fbdb5941bbb68ba977853ee3986b19b9a9e5aa9636e282f1144a08606d145"
         }
       ],
       "license": "MIT",
@@ -3268,6 +3268,16 @@
       "category": "research",
       "description": "Universal deep research agent team. 13-agent pipeline for rigorous academic research on any topic. 8 modes: full research, quick brief, paper review, lit-review, fact-check, three-way literature scan, Socratic guided research dialogue, and systematic review with optional meta-analysis. Covers research question formulation, Socratic mentoring, methodology design, systematic literature search, source verification, cross-source synthesis, risk of bias assessment, meta-analysis, APA 7.0 report compilation, editorial review, devil's advocate challenges, ethics review, and post-research literature monitoring. Triggers on: research, deep research, literature review, systematic review, meta-analysis, PRISMA, evidence synthesis, fact-check, WHY HOW WHAT papers, 3W literature scan, guide my research, help me think through, 研究, 深度研究, 文獻回顧, 文獻探討, 系統性回顧, 後設分析, 事實查核, 三段式文獻掃描, 引導我的研究, 幫我釐清, 幫我想想, 我不確定要研究什麼, 研究方向, 研究主題, 심층 연구, 문헌 조사, 체계적 문헌고찰, 메타분석, 사실 확인, 연구 방향을 잡아줘, 연구 주제 정하는 것을 도와줘, revisión de literatura, metaanálisis",
       "files": [
+        {
+          "bytes": 466,
+          "path": "DSH-PORT.md",
+          "sha256": "e4467537127fc68df78c0f663c6470b595ad75125ac9a809fc2813a8634f97af"
+        },
+        {
+          "bytes": 54300,
+          "path": "SKILL.md",
+          "sha256": "1a085e18f004a3e9be0ab15fc13c2355d66630e1b094305af86a50c398375962"
+        },
         {
           "bytes": 35276,
           "path": "agents/bibliography_agent.md",
@@ -3337,11 +3347,6 @@
           "bytes": 9294,
           "path": "agents/timeline_extraction_agent.md",
           "sha256": "356b458df74f1a317e330fa2efec264b694fc04db25dfa2506621758d562076c"
-        },
-        {
-          "bytes": 466,
-          "path": "DSH-PORT.md",
-          "sha256": "e4467537127fc68df78c0f663c6470b595ad75125ac9a809fc2813a8634f97af"
         },
         {
           "bytes": 7108,
@@ -3544,6 +3549,11 @@
           "sha256": "4e5d162f5ee64e52393720f0d47d204ea389d7d871649f234164329d4931caf2"
         },
         {
+          "bytes": 55955,
+          "path": "shared/contracts/README.md",
+          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
+        },
+        {
           "bytes": 18898,
           "path": "shared/contracts/activity/adjudication_activity_input.schema.json",
           "sha256": "631c3cdb06d7dfc757199af72925a2d508bec2d189cc7d9c5461a82d2cfda977"
@@ -3939,11 +3949,6 @@
           "sha256": "b23d1dae82ef383fae9ccbc269d2aa68ed73dd61a47c2a544c1d12e59c39c3f5"
         },
         {
-          "bytes": 55955,
-          "path": "shared/contracts/README.md",
-          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
-        },
-        {
           "bytes": 17378,
           "path": "shared/contracts/research_workflow/inquiry_branch_ledger.schema.json",
           "sha256": "6b88b75fb8f6350b7926738653006a32e7501fdae4d8b7eea63f3aaa26afed2d"
@@ -4279,11 +4284,6 @@
           "sha256": "f3b2ad57d8c22c10582d76210877b50504c2d4a96a71986197b702e258ffae5c"
         },
         {
-          "bytes": 54300,
-          "path": "SKILL.md",
-          "sha256": "1a085e18f004a3e9be0ab15fc13c2355d66630e1b094305af86a50c398375962"
-        },
-        {
           "bytes": 6217,
           "path": "templates/evidence_assessment_template.md",
           "sha256": "b522c3b4798c19211a2ea52f28ef7fc89dd926128e78b8e4d3e866058d09533a"
@@ -4379,14 +4379,19 @@
       "description": "Chinese-first research paper writing, revision, polishing, section drafting, rebuttal, peer-review response, thesis prose improvement, and manuscript argument planning. Use when the user asks to write or revise论文正文, abstracts, introductions, methods, results, discussion, conclusions, related work, responses to reviewers, LaTeX/Overleaf text, or academic prose. Preserve formulas, English paper titles, terms, citations, and measured results.",
       "files": [
         {
-          "bytes": 242,
-          "path": "agents/openai.yaml",
-          "sha256": "58ef8d5346fbeda2b4528f9dca8dc0ff2ee13c83dc143aa87389d9c39c94ad43"
-        },
-        {
           "bytes": 418,
           "path": "DSH-PORT.md",
           "sha256": "66d6e071699a887d7a0bf08d5903cf435f768dfb62463f065ec5934ace21536c"
+        },
+        {
+          "bytes": 5358,
+          "path": "SKILL.md",
+          "sha256": "eb09c0af66b4c9838cc84142601873f8ccf5d03f637eb9197049552af6403722"
+        },
+        {
+          "bytes": 242,
+          "path": "agents/openai.yaml",
+          "sha256": "58ef8d5346fbeda2b4528f9dca8dc0ff2ee13c83dc143aa87389d9c39c94ad43"
         },
         {
           "bytes": 4791,
@@ -4482,11 +4487,6 @@
           "bytes": 2036,
           "path": "references/paper-writing/writing_checklists/related_work_questions.md",
           "sha256": "7261a70fbaa9b3e319f40fa4434b5f6ba8cf92da9b1ac29a8d83cc2e3c60200b"
-        },
-        {
-          "bytes": 5358,
-          "path": "SKILL.md",
-          "sha256": "eb09c0af66b4c9838cc84142601873f8ccf5d03f637eb9197049552af6403722"
         }
       ],
       "license": "MIT",
@@ -4498,6 +4498,16 @@
       "category": "figures",
       "description": "Creates and audits truthful, accessible, publication-ready scientific figures with Matplotlib, Seaborn, or Plotly. Use it for figure design, multi-panel layouts, uncertainty and missing-data displays, color/contrast review, image metadata validation, and journal export planning.",
       "files": [
+        {
+          "bytes": 419,
+          "path": "DSH-PORT.md",
+          "sha256": "568c4433d2abc753175e5cf73e6cf21cbc3998e63b8fe0d7e941f883527322ce"
+        },
+        {
+          "bytes": 16751,
+          "path": "SKILL.md",
+          "sha256": "6bf787fc26dbf14bf5e36761359e7c3154a8772b8609032a49f89d603997f733"
+        },
         {
           "bytes": 6756,
           "path": "assets/color_palettes.py",
@@ -4522,11 +4532,6 @@
           "bytes": 10870,
           "path": "assets/publisher_profiles.json",
           "sha256": "1e1b1b5a4e0e3dfc57877f2abf1e96888fe6b65617234b078f193b8f76e0ebe9"
-        },
-        {
-          "bytes": 419,
-          "path": "DSH-PORT.md",
-          "sha256": "568c4433d2abc753175e5cf73e6cf21cbc3998e63b8fe0d7e941f883527322ce"
         },
         {
           "bytes": 9094,
@@ -4587,11 +4592,6 @@
           "bytes": 7762,
           "path": "scripts/style_preview.py",
           "sha256": "ca14e714dc2fb32541ff80292db97b3acbac074a65c4f2fb290f38354f880ba7"
-        },
-        {
-          "bytes": 16751,
-          "path": "SKILL.md",
-          "sha256": "6bf787fc26dbf14bf5e36761359e7c3154a8772b8609032a49f89d603997f733"
         }
       ],
       "license": "MIT",
@@ -4603,6 +4603,21 @@
       "category": "paper-writing",
       "description": "Drafts, revises, and audits scientific manuscripts or reports with explicit evidence provenance, reporting-guideline coverage, authorship accountability, confidentiality controls, and local consistency checks. Use for manuscript sections, references, declarations, tables, figures, or submission preparation when scientific accuracy and traceability matter.",
       "files": [
+        {
+          "bytes": 407,
+          "path": "DSH-PORT.md",
+          "sha256": "150c5d406f99a298d6024996747730052c3d2a5035ff5ae4c9c9b9bfdf366bd1"
+        },
+        {
+          "bytes": 16244,
+          "path": "SKILL.md",
+          "sha256": "48ed1f78f7a55e09aa73007d5965663254f951406dee4600dac15a9564848df2"
+        },
+        {
+          "bytes": 2713,
+          "path": "assets/REPORT_FORMATTING_GUIDE.md",
+          "sha256": "2bb69499426ed6727c1701bae752c2e902151cbf69963f8bcf25b9e54cc20724"
+        },
         {
           "bytes": 1239,
           "path": "assets/authorship_template.json",
@@ -4629,11 +4644,6 @@
           "sha256": "55305ba311ff4e2459a31a99b3f1b9da44d79499332399a9216b5f92cb412ab2"
         },
         {
-          "bytes": 2713,
-          "path": "assets/REPORT_FORMATTING_GUIDE.md",
-          "sha256": "2bb69499426ed6727c1701bae752c2e902151cbf69963f8bcf25b9e54cc20724"
-        },
-        {
           "bytes": 189,
           "path": "assets/reporting_coverage_template.json",
           "sha256": "886ca599622c1dfaedde7649ec47e973b4fbe6081cac6a6afaf24ace899d46a9"
@@ -4647,11 +4657,6 @@
           "bytes": 599,
           "path": "assets/source_manifest_template.json",
           "sha256": "fc6f65a8571b717691ac717f325825a608190f271e8b79650b711cc95f5b0a36"
-        },
-        {
-          "bytes": 407,
-          "path": "DSH-PORT.md",
-          "sha256": "150c5d406f99a298d6024996747730052c3d2a5035ff5ae4c9c9b9bfdf366bd1"
         },
         {
           "bytes": 4919,
@@ -4757,11 +4762,6 @@
           "bytes": 14393,
           "path": "scripts/validate_manifest.py",
           "sha256": "6f87919db5aa5fb5ba929b6566c892a0d6881a9e46d8a9646186c6cac01e13d2"
-        },
-        {
-          "bytes": 16244,
-          "path": "SKILL.md",
-          "sha256": "48ed1f78f7a55e09aa73007d5965663254f951406dee4600dac15a9564848df2"
         }
       ],
       "license": "MIT",
@@ -4774,6 +4774,16 @@
       "category": "systematic-review",
       "description": "Protocol-driven study screening for systematic, scoping and rapid reviews. Turns a proposal or PROSPERO protocol into confirmed eligibility rules, then screens titles/abstracts and full texts with two blinded AI reviewers and a third-reviewer adjudicator: ordered exclusion codes, no silent defaults, resumable batch runs, QC (seed studies, near-miss rechecks, kappa and PABAK), PRISMA 2020 counts, EndNote/Zotero RIS groups, an Excel log, a methods draft and a literature_corpus handoff to academic-paper. Reads RIS, PubMed .nbib, Web of Science and CSV exports; removes duplicates. 8 modes: protocol, quick, pilot, ta-screen, ft-screen, adjudicate, audit, report. Use it to screen records against eligibility criteria, pilot screening, resolve screening conflicts, audit exclusions or report the selection process. Triggers on: screen these papers, title/abstract screening, full-text screening, screening conflicts, inclusion criteria, PRISMA flow, غربالگری مقالات, اسکرینینگ عنوان و چکیده, معیارهای ورود و خروج.",
       "files": [
+        {
+          "bytes": 462,
+          "path": "DSH-PORT.md",
+          "sha256": "c28e15f9358fe10be8a503f736934ad4b103086870aad28b689b3b191ec65b67"
+        },
+        {
+          "bytes": 35440,
+          "path": "SKILL.md",
+          "sha256": "8dc840ba5c18ca2b23a714d43ba013a6e7141d853b9215cb73699e026006067b"
+        },
         {
           "bytes": 5920,
           "path": "agents/protocol_architect_agent.md",
@@ -4793,11 +4803,6 @@
           "bytes": 4900,
           "path": "agents/screening_reviewer_agent.md",
           "sha256": "7411ec9df3e52b7f037797728da1b6f7f22c5fb7fe42b06661742f1136d6700f"
-        },
-        {
-          "bytes": 462,
-          "path": "DSH-PORT.md",
-          "sha256": "c28e15f9358fe10be8a503f736934ad4b103086870aad28b689b3b191ec65b67"
         },
         {
           "bytes": 1861,
@@ -4920,6 +4925,11 @@
           "sha256": "4e5d162f5ee64e52393720f0d47d204ea389d7d871649f234164329d4931caf2"
         },
         {
+          "bytes": 55955,
+          "path": "shared/contracts/README.md",
+          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
+        },
+        {
           "bytes": 18898,
           "path": "shared/contracts/activity/adjudication_activity_input.schema.json",
           "sha256": "631c3cdb06d7dfc757199af72925a2d508bec2d189cc7d9c5461a82d2cfda977"
@@ -5315,11 +5325,6 @@
           "sha256": "b23d1dae82ef383fae9ccbc269d2aa68ed73dd61a47c2a544c1d12e59c39c3f5"
         },
         {
-          "bytes": 55955,
-          "path": "shared/contracts/README.md",
-          "sha256": "e1df730c53db79c2799840ee6b79c2a58aa889b2c5b833b16d239fa6d423ce2b"
-        },
-        {
           "bytes": 17378,
           "path": "shared/contracts/research_workflow/inquiry_branch_ledger.schema.json",
           "sha256": "6b88b75fb8f6350b7926738653006a32e7501fdae4d8b7eea63f3aaa26afed2d"
@@ -5655,11 +5660,6 @@
           "sha256": "f3b2ad57d8c22c10582d76210877b50504c2d4a96a71986197b702e258ffae5c"
         },
         {
-          "bytes": 35440,
-          "path": "SKILL.md",
-          "sha256": "8dc840ba5c18ca2b23a714d43ba013a6e7141d853b9215cb73699e026006067b"
-        },
-        {
           "bytes": 6858,
           "path": "templates/prompts.md",
           "sha256": "6b8258314e3972a4bc06504b3163faf346312b8a12175816efa4289a76d13f6d"
@@ -5689,6 +5689,16 @@
       "category": "venue",
       "description": "Prepares journal manuscripts, conference papers, research posters, and grant documents using venue-specific formatting guidance and bundled LaTeX scaffolds. Supports selecting an official template, checking current page or anonymity rules, adapting academic writing to a venue, or inspecting a submission PDF.",
       "files": [
+        {
+          "bytes": 401,
+          "path": "DSH-PORT.md",
+          "sha256": "8212daa57886a4e8eadd9825cfcfc3a3f703e2a2b9f94526d92fdd07d93512a7"
+        },
+        {
+          "bytes": 14598,
+          "path": "SKILL.md",
+          "sha256": "728d73cc4dc356cf2b9fca5738586d92bf33fcf2b7baecc80f7631f57d9cb5f7"
+        },
         {
           "bytes": 2366,
           "path": "assets/examples/cell_summary_example.md",
@@ -5770,11 +5780,6 @@
           "sha256": "721558f66dd60e6d0711a361b4b5fc3ae141eda989d6b744d008951b8cb15194"
         },
         {
-          "bytes": 401,
-          "path": "DSH-PORT.md",
-          "sha256": "8212daa57886a4e8eadd9825cfcfc3a3f703e2a2b9f94526d92fdd07d93512a7"
-        },
-        {
           "bytes": 6090,
           "path": "references/cell_press_style.md",
           "sha256": "f8f30f312b2c098d9c5fc0b0cc2ab93e44c5d1f511c314171c193bd42ce2905e"
@@ -5848,11 +5853,6 @@
           "bytes": 11755,
           "path": "scripts/validate_format.py",
           "sha256": "8909d963c7308f380eee9277ee4652570e736d837505730e77e046dc94e95c91"
-        },
-        {
-          "bytes": 14598,
-          "path": "SKILL.md",
-          "sha256": "728d73cc4dc356cf2b9fca5738586d92bf33fcf2b7baecc80f7631f57d9cb5f7"
         }
       ],
       "license": "MIT",

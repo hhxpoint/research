@@ -140,7 +140,7 @@ def sha256_file(path: Path) -> str:
 
 def collect_files(root: Path) -> dict[str, dict]:
     files: dict[str, dict] = {}
-    for p in sorted(root.rglob("*")):
+    for p in sorted(root.rglob("*"), key=lambda x: x.relative_to(root).as_posix()):
         if p.is_dir():
             continue
         if not p.is_file():

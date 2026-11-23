@@ -182,16 +182,27 @@ def parse_frontmatter(text: str) -> dict:
 
 def skill_files(skill_dir: Path) -> list[dict]:
     files = []
-    for p in sorted(skill_dir.rglob("*")):
-        if p.is_dir():
-            continue
-        if not p.is_file():
-            raise ValueError(f"unsupported file type in skill dir: {p}")
+    # Sort by the POSIX-relative path string, not by OS-specific Path ordering,
+    # so the lock file is byte-identical when rebuilt on Windows and Linux.
+    paths = sorted(
+        (p for p in skill_dir.rglob("*") if p.is_file()),
+        key=lambda p: p.relative_to(skill_dir).as_posix(),
+    )
+    for p in paths:
         rel = p.relative_to(skill_dir).as_posix()
         files.append({"path": rel, "sha256": sha256_file(p), "bytes": p.stat().st_size})
     if not files:
         raise ValueError(f"empty skill dir: {skill_dir}")
     return files
+
+
+def canonical_lock(lock: dict) -> dict:
+    """Return a comparison form with order-insensitive file lists."""
+    result = json.loads(json.dumps(lock))
+    for skill in result.get("skills", []):
+        if isinstance(skill.get("files"), list):
+            skill["files"] = sorted(skill["files"], key=lambda f: f.get("path", ""))
+    return result
 
 
 def read_skill_meta(skill_dir: Path) -> tuple[dict, str]:
@@ -369,8 +380,27 @@ def main() -> int:
                 else:
                     dirs[name] = SKILLS_DIR / name
             rebuilt = build_lock(dirs, None)
-            if json.dumps(rebuilt, sort_keys=True) != json.dumps(committed, sort_keys=True):
-                problems.append("lock file does not match repo content (run --from-installed and commit)")
+            if json.dumps(canonical_lock(rebuilt), sort_keys=True) != json.dumps(
+                canonical_lock(committed), sort_keys=True
+            ):
+                details = []
+                by_name = {s["name"]: s for s in canonical_lock(rebuilt)["skills"]}
+                for skill in canonical_lock(committed)["skills"]:
+                    name = skill["name"]
+                    other = by_name.get(name)
+                    if other is None:
+                        details.append(f"{name}: missing from rebuilt content")
+                        continue
+                    got = {f["path"]: f for f in other["files"]}
+                    want = {f["path"]: f for f in skill["files"]}
+                    for path in sorted(set(want) | set(got)):
+                        if got.get(path) != want.get(path):
+                            details.append(f"{name}: {path}")
+                            break
+                problems.append(
+                    "lock file does not match repo content (run --from-installed and commit)"
+                    + (f"; first differences: {details[:8]}" if details else "")
+                )
         if problems:
             print("CHECK FAILED")
             for p in problems:
