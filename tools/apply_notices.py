@@ -28,9 +28,7 @@ the ARS archive.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import re
-import shutil
 import sys
 from pathlib import Path
 
@@ -338,6 +336,7 @@ def main() -> int:
     dsh_home = args.dsh_home.expanduser().resolve()
     problems: list[str] = []
     changed: list[str] = []
+    skipped: list[str] = []
     for name, (source_id, _category, mode) in sorted(BL.SKILL_SPECS.items()):
         if args.write:
             try:
@@ -345,6 +344,11 @@ def main() -> int:
             except SystemExit as exc:
                 problems.append(f"{name}: {exc}")
         else:
+            if mode == "tar" and not (dsh_home / "skills" / name / "SKILL.md").is_file():
+                # archive contents are covered by `dsh_skills.py selftest`; only
+                # require the installed copy when it exists.
+                skipped.append(name)
+                continue
             problems.extend(check_one(name, mode, dsh_home))
     if args.write:
         print(f"updated {len(set(changed))} file(s)")
@@ -356,7 +360,9 @@ def main() -> int:
             print("  -", p)
         return 1
     if args.check:
-        print(f"NOTICES OK: {len(BL.SKILL_SPECS)} skills carry NOTICE/LICENSE/DSH-PORT")
+        checked = len(BL.SKILL_SPECS) - len(skipped)
+        print(f"NOTICES OK: {checked} skills checked"
+              + (f" (skipped not-installed tar skills: {', '.join(skipped)})" if skipped else ""))
     return 0
 
 

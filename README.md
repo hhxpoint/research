@@ -138,7 +138,8 @@ research/
 ├─ tools/
 │  ├─ dsh_skills.py             安装 / 校验 / 卸载 / doctor / selftest
 │  ├─ build_lock.py             维护者：内存构建 + 原子写入 ARS 归档与锁文件，--check 校验自洽
-│  └─ apply_notices.py          维护者：生成/校验 NOTICE、LICENSE、DSH-PORT 与 LPPL 披露
+│  ├─ apply_notices.py          维护者：生成/校验 NOTICE、LICENSE、DSH-PORT 与 LPPL 披露
+│  └─ check_rebuild.py          维护者：校验干净重建的锁与提交锁语义一致（CI）
 ├─ tests/                       unittest：锁文件、归档安全、安装/校验/回滚
 ├─ scripts/install.ps1|.sh      薄封装
 ├─ docs/

@@ -27,10 +27,10 @@ jobs:
       - name: Install PyYAML
         run: python -m pip install --disable-pip-version-check pyyaml
       - name: Byte-compile tools and tests
-        run: python -m py_compile tools/dsh_skills.py tools/build_lock.py tools/apply_notices.py tests/test_repo.py
+        run: python -m py_compile tools/dsh_skills.py tools/build_lock.py tools/apply_notices.py tools/check_rebuild.py tests/test_repo.py
       - name: Validate lock file consistency
         run: python tools/build_lock.py --check
-      - name: Validate licence / provenance files
+      - name: Validate license / provenance files (repo payloads)
         run: python tools/apply_notices.py --check
       - name: Repository selftest
         run: python tools/dsh_skills.py selftest
@@ -43,10 +43,11 @@ jobs:
           TMP_HOME="$(mktemp -d)"
           python tools/dsh_skills.py install --mode full --dsh-home "$TMP_HOME" --no-backup
           python tools/dsh_skills.py verify --dsh-home "$TMP_HOME" --require-all
+          python tools/apply_notices.py --check --dsh-home "$TMP_HOME"
           python tools/dsh_skills.py list --dsh-home "$TMP_HOME" --json > /dev/null
           python tools/dsh_skills.py uninstall --names academic-paper --dsh-home "$TMP_HOME" --keep
           rm -rf "$TMP_HOME"
-      - name: Clean-room rebuild determinism
+      - name: Clean-room rebuild + payload comparison
         shell: bash
         run: |
           set -euo pipefail
@@ -57,11 +58,8 @@ jobs:
           (
             cd "$TMP_REPO"
             python tools/build_lock.py --from-installed --dsh-home "$TMP_HOME"
-            if [ -n "$(git status --porcelain)" ]; then
-              echo "ERROR: --from-installed rebuild differs from committed content"
-              git status --short
-              exit 1
-            fi
+            python tools/build_lock.py --check
+            python tools/check_rebuild.py --committed "$GITHUB_WORKSPACE/manifests/skills.lock.json" --rebuilt manifests/skills.lock.json
           )
           rm -rf "$TMP_HOME" "$TMP_REPO"
       - name: Doctor
