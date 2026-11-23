@@ -357,8 +357,9 @@ def cmd_install(args) -> int:
     lock = load_lock()
     home = dsh_home_from(args)
     skills_root = skills_root_for(home)
-    if REPO_ROOT in skills_root.parents or skills_root == REPO_ROOT:
-        raise SkillError(f"refusing to install into the repository itself: {skills_root}")
+    payload_root = REPO_ROOT / "skills"
+    if skills_root == payload_root or payload_root in skills_root.parents:
+        raise SkillError(f"refusing to overwrite the repository payload directory: {skills_root}")
     selected = select_skills(lock, args)
     if not selected:
         raise SkillError("nothing selected")
