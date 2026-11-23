@@ -50,8 +50,8 @@
    - 自有内容用 `local` source（MIT）；
    - 第三方内容加对应的 `SOURCES` 条目并在 `THIRD-PARTY.md` 记录。
 3. 把技能名加入需要的 preset（`PRESETS`）。
-4. `python tools/build_lock.py --from-installed` 重新生成锁文件（需要该技能已在 `$DSH_HOME/skills`，
-   或先手动复制到那里）。
+4. `python tools/build_lock.py --from-installed` 重新生成锁文件（普通技能直接从仓库 `skills/` 读取；
+   只有 ARS 的 tar 技能需要已安装在 `$DSH_HOME/skills`，因为需要重建归档）。
 5. 跑一遍 `selftest` 与测试，提交。
 
 ## 本地完整验证
