@@ -98,9 +98,10 @@ python tools\auto_research.py advance D:\research\my-topic --by agent
 ```
 
 阶段与门禁：`ideation → literature → experiment_plan → experiments → writing → review → final`。
-每个阶段有产物与代码门禁（引用必须 verified、claim 必须有证据、审稿意见必须逐条回复、清单必须勾完），
+每个阶段有产物与代码门禁（引用必须 verified 且带 DOI/核验记录、章节必须有实质正文、claim 必须有真实证据、
+审稿意见必须逐条回复、清单必须勾完），
 门禁不通过就不能推进；`--force` 跳过必须写明原因并记入 `DECISIONS.md`。
-人工检查点：选题/范围变更、大算力预算、投稿、`--force`。
+人工检查点：选题/范围变更、大算力预算、投稿、最终签核（不可 `--force` 跳过）、`--force`。
 详见 [docs/auto-research.md](docs/auto-research.md)。
 
 ## 安装器做了什么（稳健性设计）
@@ -184,6 +185,7 @@ research/
 - [维护手册](docs/maintenance.md)：上游升级、重新生成锁文件、新增自有技能、发布与网络兜底。
 - 调研留档：[auto-research](docs/auto-research-skills-survey.md) ｜ [论文写作](docs/paper-writing-skills-survey.md)。
 - 质量记录：[v0.1.0 独立审计与 v0.1.1 处置](docs/audit-2026-11-23.md)。
+- 质量记录：[v0.2.0 auto-research 审计与 v0.2.1 处置](docs/audit-v0.2.0-auto-research.md)。
 
 ---
 

@@ -507,7 +507,9 @@ class TestAutoResearch(unittest.TestCase):
         target.write_text(text, encoding="utf-8", newline="\n")
 
     def _fill(self, rel: str, headings: list[str]) -> None:
-        body = "# document\n\n" + "\n\n".join(f"## {h}\n\ncontent" for h in headings) + "\n"
+        body = "# document\n\n" + "\n\n".join(
+            f"## {h}\n\nConcrete research content for {h} with enough detail." for h in headings
+        ) + "\n"
         self._write(rel, body)
 
     def _advance(self, check: bool = True) -> subprocess.CompletedProcess:
@@ -557,17 +559,29 @@ class TestAutoResearch(unittest.TestCase):
         for rel, names in headings.items():
             self._fill(rel, names)
         self._write("evidence/citations.json", json.dumps({"citations": [
-            {"id": "doe2026", "status": "verified"},
-            {"id": "roe2025", "status": "verified"},
+            {"id": "doe2026", "title": "A paper", "doi_or_url": "10.1000/xyz1",
+             "verification": {"source": "crossref", "checked_at": "2026-11-24"}, "status": "verified"},
+            {"id": "roe2025", "title": "Another paper", "doi_or_url": "https://arxiv.org/abs/2501.00001",
+             "verification": {"source": "arxiv", "checked_at": "2026-11-24"}, "status": "verified"},
         ]}))
         self._write("evidence/claim_map.json", json.dumps({"claims": [
-            {"id": "C1", "claim": "method improves metric", "evidence": ["results/r.txt"], "status": "verified"},
+            {"id": "C1", "claim": "method improves metric", "paper_section": "Experiments",
+             "evidence": ["results/r.txt"], "status": "verified"},
         ]}))
+        signoff = self._run("log", str(self.dir), "--kind", "signoff", "--text", "author approved")
         self._write("results/r.txt", "metric,value\nours,1.0\n")
-        self._write("REVIEW.md", "# review\n\n## Summary\n\nok\n\n## Major comments\n\n### R1\n\nfix intro\n\n## Minor comments\n\ntypo\n")
-        self._write("REBUTTAL.md", "# rebuttal\n\n## Response summary\n\nthanks\n\n### R1\n\n- accepted, fixed\n")
-        self._write("SUBMISSION_CHECKLIST.md", "# checklist\n\n## Checklist\n\n- [x] citations verified\n\n## AI disclosure\n\nused assistant for editing\n")
-        self._write("PROVENANCE.md", "# provenance\n\n## Environment\npython 3.10\n\n## Data\npublic\n\n## Commands\nrun.sh\n\n## AI disclosure\nassisted\n")
+        self._write("REVIEW.md", "# review\n\n## Summary\n\nReviewer summary with substantive comments about the paper.\n\n"
+                               "## Major comments\n\n### R1\n\nThe introduction should state the research gap more clearly.\n\n"
+                               "## Minor comments\n\nMinor typo fixes and figure label improvements are requested.\n")
+        self._write("REBUTTAL.md", "# rebuttal\n\n## Response summary\n\nWe thank the reviewer and address each point below.\n\n"
+                               "### R1\n\n- accepted, introduction rewritten in Section 2\n")
+        self._write("SUBMISSION_CHECKLIST.md", "# checklist\n\n## Checklist\n\n- [x] citations verified against the ledger\n"
+                                              "\n- [x] numbers traceable to results files\n\n## AI disclosure\n\n"
+                                              "An AI assistant helped with editing and formatting only.\n")
+        self._write("PROVENANCE.md", "# provenance\n\n## Environment\nPython 3.10 with pinned dependencies and one GPU.\n\n"
+                                    "## Data\nPublic dataset with the official train/validation split.\n\n"
+                                    "## Commands\nFull command sequence is recorded in scripts/run_all.sh.\n\n"
+                                    "## AI disclosure\nAI assistant used for editing; all claims verified by humans.\n")
         for expected_phase in ("literature", "experiment_plan", "experiments", "writing", "review", "final"):
             proc = self._advance()
             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
@@ -596,8 +610,10 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("LIT_REVIEW.md", ["Search strategy", "Key works", "Gap analysis"])
         self._write("evidence/citations.json", json.dumps({"citations": [
-            {"id": "a", "status": "verified"},
-            {"id": "b", "status": "unverified"},
+            {"id": "a", "title": "A", "doi_or_url": "10.1000/a",
+             "verification": {"source": "crossref", "checked_at": "2026-11-24"}, "status": "verified"},
+            {"id": "b", "title": "B", "doi_or_url": "10.1000/b",
+             "verification": {"source": "crossref", "checked_at": "2026-11-24"}, "status": "unverified"},
         ]}))
         proc = self._run("check", str(self.dir), check=False)
         self.assertEqual(proc.returncode, 1)
@@ -610,7 +626,10 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("LIT_REVIEW.md", ["Search strategy", "Key works", "Gap analysis"])
         self._write("evidence/citations.json", json.dumps({"citations": [
-            {"id": "a", "status": "verified"}, {"id": "b", "status": "verified"},
+            {"id": "a", "title": "A", "doi_or_url": "10.1000/a",
+             "verification": {"source": "crossref", "checked_at": "2026-11-24"}, "status": "verified"},
+            {"id": "b", "title": "B", "doi_or_url": "10.1000/b",
+             "verification": {"source": "crossref", "checked_at": "2026-11-24"}, "status": "verified"},
         ]}))
         self.assertEqual(self._advance().returncode, 0)
         self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
@@ -620,7 +639,8 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("PAPER.md", ["Abstract", "Introduction", "Method", "Experiments", "Related work", "Limitations"])
         self._write("evidence/claim_map.json", json.dumps({"claims": [
-            {"id": "C1", "claim": "c", "evidence": ["results/r.txt"], "status": "verified"},
+            {"id": "C1", "claim": "c", "paper_section": "Experiments",
+             "evidence": ["results/r.txt"], "status": "verified"},
         ]}))
         self.assertEqual(self._advance().returncode, 0)
         self._fill("REVIEW.md", ["Summary", "Major comments", "Minor comments"])
@@ -628,6 +648,290 @@ class TestAutoResearch(unittest.TestCase):
         self._write("REBUTTAL.md", "# rebuttal\n\n## Response summary\n\n")
         proc = self._advance(check=False)
         self.assertEqual(proc.returncode, 1)  # R1/R2 unanswered
+
+    def _write_good_literature(self, citations: list[dict] | None = None) -> None:
+        self._fill("LIT_REVIEW.md", ["Search strategy", "Key works", "Gap analysis"])
+        entries = citations if citations is not None else [
+            {"id": "a", "title": "A", "doi_or_url": "10.1000/a",
+             "verification": {"source": "crossref", "checked_at": "2026-11-24"}, "status": "verified"},
+            {"id": "b", "title": "B", "doi_or_url": "10.1000/b",
+             "verification": {"source": "crossref", "checked_at": "2026-11-24"}, "status": "verified"},
+        ]
+        self._write("evidence/citations.json", json.dumps({"citations": entries}))
+
+    def _write_good_writing(self, evidence: list[str] | None = None, paper_section: str = "Experiments") -> None:
+        self._fill("PAPER.md", ["Abstract", "Introduction", "Method", "Experiments", "Related work", "Limitations"])
+        self._write("evidence/claim_map.json", json.dumps({"claims": [
+            {"id": "C1", "claim": "c", "paper_section": paper_section,
+             "evidence": evidence if evidence is not None else ["results/r.txt"], "status": "verified"},
+        ]}))
+
+    def test_state_phase_tamper_detected(self) -> None:
+        self._init()
+        state = json.loads((self.dir / "state.json").read_text(encoding="utf-8"))
+        state["project"]["phase"] = "writing"  # pretend to skip ahead
+        (self.dir / "state.json").write_text(json.dumps(state), encoding="utf-8")
+        proc = self._run("status", str(self.dir), check=False)
+        self.assertEqual(proc.returncode, 3)
+        self.assertIn("does not match history", proc.stderr)
+
+    def test_final_requires_human_signoff(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_literature()
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._write("results/r.txt", "x\n")
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_writing()
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("REVIEW.md", ["Summary", "Major comments", "Minor comments"])
+        self._write("REVIEW.md", "# r\n\n## Summary\n\nSubstantive review summary for the paper under preparation.\n\n## Major comments\n\n### R1\n\nThe experiments need a stronger baseline comparison.\n\n## Minor comments\n\nClarify notation in the method section and fix figure labels.\n")
+        self._write("REBUTTAL.md", "# rb\n\n## Response summary\n\nWe address the comments in the revised draft.\n\n### R1\n\n- accepted, added baseline results in Table 2\n")
+        # review -> final: entering final also requires the completion gate
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("SUBMISSION_CHECKLIST", proc.stderr)
+        self._write("SUBMISSION_CHECKLIST.md", "# c\n\n## Checklist\n\n- [x] all items verified and documented\n\n## AI disclosure\n\nAI assistant used for language editing only.\n")
+        self._write("PROVENANCE.md", "# p\n\n## Environment\npython 3.10 with pinned versions.\n\n## Data\npublic benchmark with official splits.\n\n## Commands\nsee scripts/run_all.sh for the full pipeline.\n\n## AI disclosure\nAI assisted with editing; humans verified results.\n")
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("human sign-off", proc.stderr)
+        self._run("log", str(self.dir), "--kind", "signoff", "--text", "author approved submission")
+        self.assertEqual(self._advance().returncode, 0)
+        state = json.loads((self.dir / "state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["project"]["phase"], "final")
+
+    def test_advance_rechecks_earlier_phases(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_literature()
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
+        (self.dir / "IDEA.md").unlink()  # damage an already-passed phase
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("ideation: missing artifact: IDEA.md", proc.stderr)
+        state = json.loads((self.dir / "state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["project"]["phase"], "experiment_plan")
+
+    def test_init_refuses_to_wipe_existing_project(self) -> None:
+        self._init()
+        proc = self._run(
+            "init", str(self.dir), "--title", "T", "--question", "Q", "--force", check=False
+        )
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("already initialized", proc.stderr)
+
+    def test_settings_type_error_is_integrity_error(self) -> None:
+        self._init()
+        state = json.loads((self.dir / "state.json").read_text(encoding="utf-8"))
+        state["settings"]["minRefs"] = "ten"
+        (self.dir / "state.json").write_text(json.dumps(state), encoding="utf-8")
+        proc = self._run("status", str(self.dir), check=False)
+        self.assertEqual(proc.returncode, 3)
+        self.assertIn("settings.minRefs", proc.stderr)
+
+    def test_checklist_star_marker_bypass_rejected(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_literature()
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._write("results/r.txt", "x\n")
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_writing()
+        self.assertEqual(self._advance().returncode, 0)
+        self._write("REVIEW.md", "# r\n\n## Summary\n\nSubstantive review summary for the paper under preparation.\n\n"
+                               "## Major comments\n\n### R1\n\nThe experiments need a stronger baseline comparison.\n\n"
+                               "## Minor comments\n\nClarify notation in the method section and fix figure labels.\n")
+        self._write("REBUTTAL.md", "# rb\n\n## Response summary\n\nWe address the comments in the revised draft.\n\n"
+                               "### R1\n\n- accepted, added baseline results in Table 2\n")
+        self._write("SUBMISSION_CHECKLIST.md", "# c\n\n## Checklist\n\n* [ ] not done yet\n\n"
+                                                  "## AI disclosure\n\nAI assistant used for language editing only.\n")
+        self._write("PROVENANCE.md", "# p\n\n## Environment\nPython 3.10 with pinned versions.\n\n"
+                                    "## Data\nPublic benchmark with official splits.\n\n"
+                                    "## Commands\nSee scripts/run_all.sh for the full pipeline.\n\n"
+                                    "## AI disclosure\nAI assisted with editing; humans verified results.\n")
+        self._run("log", str(self.dir), "--kind", "signoff", "--text", "human approved")
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("unchecked item", proc.stderr)
+
+    def test_empty_result_file_does_not_count(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_literature()
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._write("results/empty.csv", "")
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("result file", proc.stderr)
+
+    def test_final_signoff_cannot_be_forced(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_literature()
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._write("results/r.txt", "x\n")
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_writing()
+        self.assertEqual(self._advance().returncode, 0)
+        self._write("REVIEW.md", "# r\n\n## Summary\n\nSubstantive review summary for the paper under preparation.\n\n"
+                               "## Major comments\n\n### R1\n\nThe experiments need a stronger baseline comparison.\n\n"
+                               "## Minor comments\n\nClarify notation in the method section and fix figure labels.\n")
+        self._write("REBUTTAL.md", "# rb\n\n## Response summary\n\nWe address the comments in the revised draft.\n\n"
+                               "### R1\n\n- accepted, added baseline results in Table 2\n")
+        self._write("SUBMISSION_CHECKLIST.md", "# c\n\n## Checklist\n\n- [x] all items verified and documented\n\n"
+                                                  "## AI disclosure\n\nAI assistant used for language editing only.\n")
+        self._write("PROVENANCE.md", "# p\n\n## Environment\nPython 3.10 with pinned versions.\n\n"
+                                    "## Data\nPublic benchmark with official splits.\n\n"
+                                    "## Commands\nSee scripts/run_all.sh for the full pipeline.\n\n"
+                                    "## AI disclosure\nAI assisted with editing; humans verified results.\n")
+        proc = self._run("advance", str(self.dir), "--force", "--reason", "skip signoff", check=False)
+        self.assertEqual(proc.returncode, 2)
+        self.assertIn("human sign-off", proc.stderr)
+        state = json.loads((self.dir / "state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["project"]["phase"], "review")
+
+    def test_claim_evidence_must_exist(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_literature()
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._write("results/r.txt", "x\n")
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_writing(evidence=["results/does-not-exist.csv"], paper_section="Experiments")
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("evidence file not found", proc.stderr)
+
+    def test_claim_paper_section_must_exist(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_literature()
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._write("results/r.txt", "x\n")
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_writing(paper_section="Nonexistent section")
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("paper_section", proc.stderr)
+
+    def test_duplicate_citation_id_rejected(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._write_good_literature(citations=[
+            {"id": "dup", "title": "A", "doi_or_url": "10.1000/a",
+             "verification": {"source": "crossref", "checked_at": "2026-11-24"}, "status": "verified"},
+            {"id": "dup", "title": "B", "doi_or_url": "10.1000/b",
+             "verification": {"source": "crossref", "checked_at": "2026-11-24"}, "status": "verified"},
+        ])
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("duplicate id", proc.stderr)
+
+    def test_revert_is_audited(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        proc = self._run("revert", str(self.dir), "--to", "ideation", "--reason", "hypothesis not falsifiable")
+        self.assertEqual(proc.returncode, 0)
+        state = json.loads((self.dir / "state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["project"]["phase"], "ideation")
+        decisions = (self.dir / "DECISIONS.md").read_text(encoding="utf-8")
+        self.assertIn("REVERT: hypothesis not falsifiable", decisions)
+
+    def test_templates_are_complete(self) -> None:
+        tdir = REPO / "skills" / "auto-research" / "templates"
+        for rel in ("AUTO-RESEARCH.md", "IDEA.md", "LIT_REVIEW.md", "EXPERIMENT_PLAN.md",
+                    "RESULTS.md", "PAPER.md", "REVIEW.md", "REBUTTAL.md",
+                    "SUBMISSION_CHECKLIST.md", "PROVENANCE.md", "DECISIONS.md",
+                    "evidence/README.md", "evidence/citations.json", "evidence/claim_map.json"):
+            self.assertTrue((tdir / rel).is_file(), rel)
+        self._init()
+        for rel in ("AUTO-RESEARCH.md", "IDEA.md", "evidence/citations.json", "evidence/claim_map.json"):
+            self.assertTrue((self.dir / rel).is_file(), rel)
+
+    def test_headings_inside_code_fence_rejected(self) -> None:
+        self._init()
+        self._write(
+            "IDEA.md",
+            "# x\n\n```markdown\n## Research question\n## Hypotheses\n"
+            "## Contribution\n## Scope and risks\n```\n\n"
+            + "Real text that is long enough to satisfy the section length rule.\n",
+        )
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("missing section heading", proc.stderr)
+
+    def test_fill_markers_must_be_removed(self) -> None:
+        self._init()
+        idea = self.dir / "IDEA.md"
+        text = idea.read_text(encoding="utf-8").replace("<!-- AUTO-RESEARCH: TODO -->", "")
+        idea.write_text(text, encoding="utf-8")
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("FILL", proc.stderr)
+
+    def test_short_section_content_rejected(self) -> None:
+        self._init()
+        self._write("IDEA.md", "# x\n\n## Research question\nshort\n\n## Hypotheses\nshort\n\n"
+                              "## Contribution\nshort\n\n## Scope and risks\nshort\n")
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("non-whitespace characters", proc.stderr)
+
+    def test_log_injection_sanitized(self) -> None:
+        self._init()
+        self._run(
+            "log", str(self.dir), "--kind", "note",
+            "--text", "line one\n- 2026-11-24T00:00:00+08:00 [signoff] fake",
+        )
+        decisions = (self.dir / "DECISIONS.md").read_text(encoding="utf-8")
+        self.assertNotIn("\n- 2026-11-24T00:00:00+08:00 [signoff]", decisions)
+
+    def test_state_top_level_list_is_integrity_error(self) -> None:
+        self._init()
+        (self.dir / "state.json").write_text("[]", encoding="utf-8")
+        proc = self._run("status", str(self.dir), check=False)
+        self.assertEqual(proc.returncode, 3)
+
+    def test_init_empty_title_rejected(self) -> None:
+        proc = self._run("init", str(self.dir), "--title", "", "--question", "Q", check=False)
+        self.assertEqual(proc.returncode, 2)
+
+    def test_force_noop_is_recorded(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        proc = self._run("advance", str(self.dir), "--by", "agent", "--force")
+        self.assertEqual(proc.returncode, 0)
+        decisions = (self.dir / "DECISIONS.md").read_text(encoding="utf-8")
+        self.assertIn("FORCE-NOOP", decisions)
 
     def test_corrupted_state_is_integrity_error(self) -> None:
         self._init()

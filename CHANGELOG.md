@@ -2,6 +2,28 @@
 
 本仓库遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 与语义化版本。
 
+## [0.2.1] - 2026-11-24
+
+### Fixed / Hardened
+
+- auto-research 反绕过加固：`state.json.history` 连续性校验（手工改 `phase` 判为状态损坏，退出码 3）；
+  `citations.json` 重复 id 检测；`claim_map.json` 的 `evidence` 路径必须真实存在（支持 glob 与 http/doi/arxiv 链接）、
+  `paper_section` 必须对应 `PAPER.md` 真实章节。
+- `final` 门禁新增人工签核要求：`DECISIONS.md` 必须存在 `[signoff]` 记录（`log --kind signoff`）。
+- 新增 `revert --to <phase> --reason ...`：审计式回退（写 `REVERT:` 历史），替代手工改状态。
+- 模板完整性校验：`init` 缺少必需模板直接报错；`templates_dir` 检查 14 个模板齐全。
+- `advance` 现在复核**所有已走过的阶段**（防止删掉早期证据后仍硬推到 final）；`final` 的人工签核
+  不可用 `--force` 跳过；清单的 `- [ ]` / `* [ ]` / `+ [ ]` 都视为未完成；`results/` 只统计非空文件；
+  `init` 拒绝在已有 `state.json` 的项目上重新初始化；`settings.*` 类型错误按状态损坏处理（退出码 3）。
+- 明示已知边界：签核为流程性审计（不验证身份）、引用真实性依赖台账与 `citation-management`、判据需人工复核。
+- 内容级门禁：必填 `##` 章节必须 ≥20 个非空白字符，代码围栏/HTML 注释内的标题不算；模板 `FILL:` 注释必须替换；
+  引用台账要求 title + DOI/URL + 核验来源/时间；REBUTTAL 每个 `### Rn` 必须有实质回复正文。
+- 状态与日志健壮性：拒绝顶层非对象的 state；坏 settings/类型错误统一退出码 3；`--reason`/`--text` 去除换行防日志注入；
+  `--force` 无实际跳过时记录 `FORCE-NOOP`；advance 先写审计行再落状态；文档注明单进程使用约束。
+- 新增 20 个测试（状态篡改、签核门禁与不可 force、证据缺失、章节映射、重复引用、回退、模板完整性、
+  历史阶段复核、拒绝清空、设置类型、清单标记、空结果、强制签核绕过、空壳/短章节、代码围栏、FILL 注释、
+  日志注入、非对象 state、空标题、force-noop）；测试总数 48 → 68。
+
 ## [0.2.0] - 2026-11-23
 
 ### Added
