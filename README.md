@@ -4,7 +4,7 @@
 
 [![validate](https://github.com/hhxpoint/research/actions/workflows/validate.yml/badge.svg)](https://github.com/hhxpoint/research/actions/workflows/validate.yml)
 
-- **16 个 DSH 技能**：5 件套论文流水线（ARS）+ 4 个写作/引用/图表/顶会模板（K-Dense）+ 3 个文献/实验技能（ARIS）+ 中文写作 + 指标迭代循环 + 自主科研状态机 `auto-research` + 原创科研路由技能。
+- **17 个 DSH 技能**：5 件套论文流水线（ARS）+ 4 个写作/引用/图表/顶会模板（K-Dense）+ 3 个文献/实验技能（ARIS）+ 中文写作 + 指标迭代循环 + 自主科研状态机 `auto-research` + 研究手艺手册 `research-craft` + 原创科研路由技能。
 - **离线、可校验的安装器**：不依赖网络；所有文件带 sha256；安装前校验、安装时备份、失败回滚、原子替换。
 - **明确的边界**：固定上游 commit、许可证分级（MIT / CC BY-NC 4.0）、DSH 技能规范实测文档。
 - **调研留档**：两份生态调研报告，解释为什么选这些、放弃了哪些。
@@ -21,7 +21,7 @@
 # 1) 体检（检查 Python / 锁文件 / 归档 / DSH 目录）
 python tools\dsh_skills.py doctor
 
-# 2) 安装全部 16 个技能（有备份与回滚）
+# 2) 安装全部 17 个技能（有备份与回滚）
 python tools\dsh_skills.py install --mode full
 
 # 3) 校验安装结果（逐文件 sha256 + frontmatter 规则）
@@ -64,6 +64,7 @@ python3 tools/dsh_skills.py install --mode full
 | `scientific-visualization` | K-Dense | MIT | 期刊级图表：多面板、色盲友好、期刊导出规格 |
 | `venue-templates` | K-Dense | MIT + 内含 LPPL 1.3 资产 | Nature/Science/Cell/NeurIPS/PLOS/NIH/NSF 模板与格式规则 |
 | `auto-research` | 本仓库原创 | MIT | 自主科研状态机：选题→文献→实验→写作→审稿→定稿，带代码级门禁与证据审计 |
+| `research-craft` | 本仓库原创 | MIT | 研究手艺手册：作图、写作、实验设计、实验观察、现象理解（从高星科研技能中提炼） |
 | `research-lit` | ARIS | MIT | 找论文、related work、文献精读 |
 | `experiment-plan` | ARIS | MIT | claim-driven 实验计划：消融矩阵、评估协议、算力预算 |
 | `analyze-results` | ARIS | MIT | 实验结果统计、对比表、趋势与下一步实验 |
@@ -76,7 +77,7 @@ python3 tools/dsh_skills.py install --mode full
 |---|---|---|
 | `minimal` | research-stack + auto-research + research-lit + scientific-writing + citation-management + research-writing-skill | 日常读写与课题推进，占用量小 |
 | `writing` | 写作与审稿相关 9 个（含 ARS 写作/审稿/编排） | 论文冲刺 |
-| `full` | 全部 16 个（默认） | 全功能 |
+| `full` | 全部 17 个（默认） | 全功能 |
 
 ```powershell
 python tools\dsh_skills.py install --mode minimal
@@ -85,6 +86,18 @@ python tools\dsh_skills.py install --mode full --exclude sr-screener,scientific-
 ```
 
 ---
+
+## Research Craft（研究手艺）
+
+从 ARS（58.3k★）、K-Dense（58.3k★）、ARIS（19.7k★）、karpathy/autoresearch（100.5k★）等高星科研技能/方法中提炼的**可执行规则**，分五册：
+
+- `figures.md`：诚实编码、误差定义、可访问性、导出与 provenance；
+- `writing.md`：故事脊柱、摘要公式、证据绑定、语言与返修；
+- `experiment-design.md`：claim→证据→run order、反 claim、基线公平、预算与终止条件；
+- `experiment-observation.md`：run 记录、sanity check、异常 triage、失败日志与复现；
+- `phenomenon-understanding.md`：观察/解释分离、替代解释、探针、claim 强度。
+
+与 `auto-research` 阶段绑定，详见 [docs/research-craft.md](docs/research-craft.md)。
 
 ## Auto Research（自主科研状态机）
 
@@ -145,6 +158,7 @@ research/
 ├─ skills/                      可再分发的技能（明文目录，MIT）
 │  ├─ research-stack/           原创科研路由技能
 │  ├─ auto-research/            原创自主科研状态机（SKILL.md + scripts/auto_research.py + templates/）
+│  ├─ research-craft/           原创研究手艺手册（SKILL.md + references/ 五册：图/写作/设计/观察/理解）
 │  ├─ autoresearch/             uditgoenka 适配版（含 14 个子命令协议）
 │  ├─ research-lit/ experiment-plan/ analyze-results/       ARIS
 │  ├─ scientific-writing/ citation-management/
@@ -168,6 +182,7 @@ research/
 │  ├─ paper-writing-skills-survey.md   论文写作技能调研（2026-11-23）
 │  ├─ dsh-skill-spec.md                DSH 技能规范与移植指南（实测）
 │  ├─ auto-research.md                 Auto Research 状态机设计与用法
+│  ├─ research-craft.md                研究手艺：来源、提炼方法与五册手册索引
 │  ├─ install.md                       安装 / 升级 / 回滚 / 排障
 │  ├─ usage.md                         组合用法与提示词示例
 │  └─ maintenance.md                   升级上游、新增技能、发布流程
@@ -179,6 +194,7 @@ research/
 ## 文档
 
 - [Auto Research](docs/auto-research.md)：自主科研状态机、门禁、自动模式与人工检查点。
+- [Research Craft](docs/research-craft.md)：从高星科研技能提炼的作图/写作/实验/观察/理解规则。
 - [安装与运维](docs/install.md)：`DSH_HOME` 自定义、备份恢复、卸载、常见问题。
 - [使用指南](docs/usage.md)：顶会投稿 / 中文期刊 / 系统综述 / 指标迭代四条流水线与提示词示例。
 - [DSH 技能规范](docs/dsh-skill-spec.md)：技能目录、frontmatter 规则、静默失败原因、移植检查表。

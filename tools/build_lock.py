@@ -131,6 +131,7 @@ SKILL_SPECS = {
     # our own
     "research-stack": ("local", "meta", "copy"),
     "auto-research": ("local", "auto-research", "copy"),
+    "research-craft": ("local", "methodology", "copy"),
 }
 
 ARS_SKILLS = [n for n, s in SKILL_SPECS.items() if s[0] == "ars"]
@@ -140,6 +141,7 @@ PRESETS = {
     "minimal": [
         "research-stack",
         "auto-research",
+        "research-craft",
         "research-lit",
         "scientific-writing",
         "citation-management",

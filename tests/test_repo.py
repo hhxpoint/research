@@ -64,14 +64,14 @@ class TestRepoContent(unittest.TestCase):
     def test_lock_schema_and_sources(self) -> None:
         lock = json.loads(LOCK.read_text(encoding="utf-8"))
         self.assertEqual(lock["schemaVersion"], 1)
-        self.assertEqual(len(lock["skills"]), 16)
+        self.assertEqual(len(lock["skills"]), 17)
         names = {s["name"] for s in lock["skills"]}
-        for expected in ("research-stack", "auto-research", "academic-paper", "autoresearch", "venue-templates"):
+        for expected in ("research-stack", "auto-research", "research-craft", "academic-paper", "autoresearch", "venue-templates"):
             self.assertIn(expected, names)
         for preset in ("minimal", "writing", "full"):
             self.assertIn(preset, lock["presets"])
             self.assertTrue(set(lock["presets"][preset]) <= names, preset)
-        self.assertEqual(len(lock["presets"]["full"]), 16)
+        self.assertEqual(len(lock["presets"]["full"]), 17)
         for sid, source in lock["sources"].items():
             self.assertIn("license", source, sid)
             self.assertIn("repo", source, sid)
@@ -152,6 +152,25 @@ class TestRepoContent(unittest.TestCase):
                     self.assertIn("NonCommercial", license_text)
                     self.assertIn("d103b1005bb8c9f7a597e6a7ed473b75dcf8830e", port)
                     self.assertNotIn("unpinned", port)
+
+    def test_research_craft_references(self) -> None:
+        root = REPO / "skills" / "research-craft"
+        meta = MOD.validate_skill_dir(root, "research-craft")
+        self.assertIn("作图", meta["description"])
+        expected = {
+            "figures.md": ["不确定", "反模式"],
+            "writing.md": ["摘要", "返修"],
+            "experiment-design.md": ["反 claim", "基线"],
+            "experiment-observation.md": ["run", "异常"],
+            "phenomenon-understanding.md": ["替代解释", "Claim 强度"],
+        }
+        for fname, needles in expected.items():
+            path = root / "references" / fname
+            self.assertTrue(path.is_file(), fname)
+            text = path.read_text(encoding="utf-8")
+            self.assertGreater(len(text.splitlines()), 80, fname)
+            for needle in needles:
+                self.assertIn(needle, text, f"{fname}: {needle}")
 
     def test_research_stack_skill(self) -> None:
         meta = MOD.validate_skill_dir(REPO / "skills" / "research-stack", "research-stack")
@@ -269,18 +288,18 @@ class TestInstaller(unittest.TestCase):
     def test_install_full_and_verify(self) -> None:
         self._install("--mode", "full", "--no-backup")
         installed = sorted(p.name for p in self._skills().iterdir() if p.is_dir())
-        self.assertEqual(len(installed), 16)
+        self.assertEqual(len(installed), 17)
         self.assertIn("academic-paper", installed)
         self.assertIn("research-stack", installed)
         run("verify", "--require-all", dsh_home=self.home)
         proc = run("list", "--json", dsh_home=self.home)
         report = json.loads(proc.stdout)
-        self.assertEqual(len(report["skills"]), 16)
+        self.assertEqual(len(report["skills"]), 17)
         self.assertTrue(all(s["status"] == "ok" for s in report["skills"]))
 
     def test_installed_copies_carry_licenses(self) -> None:
         self._install("--mode", "full", "--no-backup")
-        for name in ("academic-paper", "scientific-writing", "venue-templates", "research-stack", "auto-research"):
+        for name in ("academic-paper", "scientific-writing", "venue-templates", "research-stack", "auto-research", "research-craft"):
             d = self._skills() / name
             for fname in ("NOTICE.md", "LICENSE.txt", "DSH-PORT.md"):
                 self.assertTrue((d / fname).is_file(), f"{name}: {fname}")
@@ -549,7 +568,7 @@ class TestAutoResearch(unittest.TestCase):
             "IDEA.md": ["Research question", "Hypotheses", "Contribution", "Scope and risks"],
             "LIT_REVIEW.md": ["Search strategy", "Key works", "Gap analysis"],
             "EXPERIMENT_PLAN.md": ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"],
-            "RESULTS.md": ["Results table", "Statistical checks", "Deviations"],
+            "RESULTS.md": ["Results table", "Observations", "Statistical checks", "Deviations"],
             "PAPER.md": ["Abstract", "Introduction", "Method", "Experiments", "Related work", "Limitations"],
             "REVIEW.md": ["Summary", "Major comments", "Minor comments"],
             "REBUTTAL.md": ["Response summary"],
@@ -634,7 +653,7 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
         self.assertEqual(self._advance().returncode, 0)
-        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._fill("RESULTS.md", ["Results table", "Observations", "Statistical checks", "Deviations"])
         self._write("results/r.txt", "x\n")
         self.assertEqual(self._advance().returncode, 0)
         self._fill("PAPER.md", ["Abstract", "Introduction", "Method", "Experiments", "Related work", "Limitations"])
@@ -683,7 +702,7 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
         self.assertEqual(self._advance().returncode, 0)
-        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._fill("RESULTS.md", ["Results table", "Observations", "Statistical checks", "Deviations"])
         self._write("results/r.txt", "x\n")
         self.assertEqual(self._advance().returncode, 0)
         self._write_good_writing()
@@ -744,7 +763,7 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
         self.assertEqual(self._advance().returncode, 0)
-        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._fill("RESULTS.md", ["Results table", "Observations", "Statistical checks", "Deviations"])
         self._write("results/r.txt", "x\n")
         self.assertEqual(self._advance().returncode, 0)
         self._write_good_writing()
@@ -773,7 +792,7 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
         self.assertEqual(self._advance().returncode, 0)
-        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._fill("RESULTS.md", ["Results table", "Observations", "Statistical checks", "Deviations"])
         self._write("results/empty.csv", "")
         proc = self._advance(check=False)
         self.assertEqual(proc.returncode, 1)
@@ -787,7 +806,7 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
         self.assertEqual(self._advance().returncode, 0)
-        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._fill("RESULTS.md", ["Results table", "Observations", "Statistical checks", "Deviations"])
         self._write("results/r.txt", "x\n")
         self.assertEqual(self._advance().returncode, 0)
         self._write_good_writing()
@@ -817,7 +836,7 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
         self.assertEqual(self._advance().returncode, 0)
-        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._fill("RESULTS.md", ["Results table", "Observations", "Statistical checks", "Deviations"])
         self._write("results/r.txt", "x\n")
         self.assertEqual(self._advance().returncode, 0)
         self._write_good_writing(evidence=["results/does-not-exist.csv"], paper_section="Experiments")
@@ -833,7 +852,7 @@ class TestAutoResearch(unittest.TestCase):
         self.assertEqual(self._advance().returncode, 0)
         self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
         self.assertEqual(self._advance().returncode, 0)
-        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._fill("RESULTS.md", ["Results table", "Observations", "Statistical checks", "Deviations"])
         self._write("results/r.txt", "x\n")
         self.assertEqual(self._advance().returncode, 0)
         self._write_good_writing(paper_section="Nonexistent section")

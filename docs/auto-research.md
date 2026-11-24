@@ -47,7 +47,7 @@
 | ideation | IDEA.md 四节齐全、无占位符 | 只有标题、没有可证伪假设 |
 | literature | LIT_REVIEW.md 三节（每节有正文）；citations.json ≥ minRefs 且全部 verified，含 id/title/DOI 或 URL/核验来源与时间 | 引用未核验、缺元数据、条数不足、台账格式错 |
 | experiment_plan | EXPERIMENT_PLAN.md 五节齐全 | 没写预算/成功判据 |
-| experiments | RESULTS.md 三节；results/ 文件 ≥ minResultFiles | 只有结论没有原始结果 |
+| experiments | RESULTS.md 四节（含 Observations）；results/ 文件 ≥ minResultFiles | 只有结论没有观察记录/原始结果 |
 | writing | PAPER.md 六节（每节 ≥20 非空白字符）；claim map ≥ minClaims、evidence 路径存在、paper_section 是真实章节；引用仍 verified | 空章节、标题只写在代码围栏里、claim 找不到证据、引用回退 |
 | review | REVIEW.md ≥ minReviewItems 个 `### Rn`；REBUTTAL 逐条回应；无 UNRESOLVED | 漏回审稿意见、假回复 |
 | final | 清单无未勾选项；PROVENANCE 四节；writing 门禁复核通过；DECISIONS.md 有人工 `[signoff]` | 没写 AI 披露/复现命令、没有人工签核 |
@@ -146,4 +146,4 @@ agent 会按本技能流程执行；关键节点它会停下来问你。
 引用未核验/条数不足、审稿回复缺失、清单未勾选、`--force` 必须带 reason、`revert` 审计、`init` 拒绝清空、`advance` 复核历史阶段、状态文件/设置类型损坏、
 `state.phase` 篡改、重复引用 id、claim 证据路径/章节不存在、空结果文件、清单星号标记、代码围栏内标题、
 FILL 注释未替换、章节正文过短、日志注入、final 缺人工签核且不可 force 跳过等情况；
-当前共 68 个测试（其中 auto-research 29 个）。门禁代码本身也在 CI 的 Python 3.10/3.12 上跑。
+当前共 69 个测试（其中 auto-research 29 个、research-craft 内容 1 个）。门禁代码本身也在 CI 的 Python 3.10/3.12 上跑。

@@ -1,5 +1,7 @@
 # PAPER · 论文 / 报告正文
 
+> 写作参考 `research-craft/references/writing.md`：故事脊柱、证据绑定、语言与返修。
+
 <!-- AUTO-RESEARCH: TODO -->
 
 > 按目标 venue 的模板写作。每个 claim 必须登记到 `evidence/claim_map.json`。

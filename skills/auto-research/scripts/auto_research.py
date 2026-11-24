@@ -118,7 +118,12 @@ REQUIRED_HEADINGS = {
         "EXPERIMENT_PLAN.md": ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"],
     },
     "experiments": {
-        "RESULTS.md": ["Results table", "Statistical checks", "Deviations"],
+        "RESULTS.md": [
+            "Results table",
+            "Observations",
+            "Statistical checks",
+            "Deviations",
+        ],
     },
     "writing": {
         "PAPER.md": ["Abstract", "Introduction", "Method", "Experiments", "Related work", "Limitations"],

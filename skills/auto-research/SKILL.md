@@ -22,7 +22,7 @@ metadata:
 | ideation | `IDEA.md` | 有 Research question / Hypotheses / Contribution / Scope and risks 四节实质内容 | research-lit / deep-research |
 | literature | `LIT_REVIEW.md` + `evidence/citations.json` | 三节齐全且每节有实质正文；引用条数 ≥ minRefs；**每条 status=verified，且 title、DOI/URL、verification.source/checked_at 齐全** | deep-research / citation-management |
 | experiment_plan | `EXPERIMENT_PLAN.md` | Baselines / Metrics / Ablations / Compute budget / Success criteria 五节齐全 | experiment-plan |
-| experiments | `RESULTS.md` + `results/` | 三节齐全；结果文件 ≥ minResultFiles；数字可回溯 | autoresearch / analyze-results |
+| experiments | `RESULTS.md` + `results/` | Results table / Observations / Statistical checks / Deviations 四节齐全；结果文件 ≥ minResultFiles；数字可回溯 | autoresearch / analyze-results |
 | writing | `PAPER.md` + `evidence/claim_map.json` | 六节齐全且每节 ≥20 非空白字符；claim 数 ≥ minClaims、证据路径真实存在、paper_section 对应真实章节；引用仍全部核验 | academic-paper / scientific-writing |
 | review | `REVIEW.md` + `REBUTTAL.md` | 审稿项 ≥ minReviewItems；每条 `### Rn` 都在 REBUTTAL 有回应；无 UNRESOLVED | academic-paper-reviewer / subagent |
 | final | `SUBMISSION_CHECKLIST.md` + `PROVENANCE.md` + `DECISIONS.md` | 清单全部勾选；复现信息四节齐全；writing 门禁仍通过；**DECISIONS.md 有人工 `[signoff]` 签核** | venue-templates / citation-management |
@@ -83,7 +83,22 @@ python scripts/auto_research.py log <dir> --kind signoff --text "作者确认实
 
 恢复工作时先 `status`，再从 `next` 指示的动作继续；不要重头再来，也不要覆盖已有证据。
 
-## 四、与其它技能的协作
+## 四、研究手艺（与 research-craft 配合）
+
+门禁只能保证"有产物、有证据"，不能保证"做得对"。每个阶段同时加载 `research-craft` 的对应手册：
+
+| 阶段 | 手册 | 重点 |
+|---|---|---|
+| ideation / experiment_plan | `references/experiment-design.md` | claim→证据、反 claim、基线公平、预算与顺序 |
+| experiments | `references/experiment-observation.md` | run 记录完整、sanity check、异常 triage、失败日志 |
+| experiments 之后 | `references/phenomenon-understanding.md` | 观察/解释分离、替代解释、探针、claim 强度 |
+| writing / review | `references/writing.md` | 故事脊柱、证据绑定、语言与返修 |
+| 作图 | `references/figures.md` | 诚实编码、误差定义、可访问性、导出与 provenance |
+
+`RESULTS.md` 的 `## Observations` 记录"看到了什么"（含失败/异常/偏差），机制解释放 `## Statistical checks`
+或论文 Discussion，并用 `claim_map.json` 绑定证据。
+
+## 五、与其它技能的协作
 
 - 文献阶段用 `deep-research` / `research-lit`，引用核验交 `citation-management`（它的 `scripts/validate_citations.py`）。
 - 实验阶段用 `experiment-plan` 出计划；跑参数搜索/指标循环用 `autoresearch`（改一处→机械验证→keep/revert）；结果汇总用 `analyze-results`。

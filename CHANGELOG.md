@@ -2,6 +2,20 @@
 
 本仓库遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 与语义化版本。
 
+## [0.3.0] - 2026-11-24
+
+### Added
+
+- 新增原创技能 `research-craft`：从高星科研技能/方法论中提炼的可执行手艺规则，五册 references：
+  **作图**（诚实编码/误差/可访问性/导出 provenance）、**写作**（故事脊柱/摘要/证据绑定/返修）、
+  **实验设计**（claim→证据/反 claim/基线公平/预算终止）、**实验观察**（run 记录/sanity/异常 triage/复现）、
+  **现象理解**（观察与解释分离/替代解释/探针/claim 强度）。
+- `auto-research` 与 craft 绑定：各阶段指向对应手册；`RESULTS.md` 新增 `## Observations` 并要求四节齐全。
+  auto-research 的 6 个模板加入 craft 手册指针（设计/观测/写作/审稿/返修/提交检查）。
+- `research-stack` 增加 `research-craft` 路由；`minimal` 预设加入 `research-craft`；技能总数 16 → 17。
+- 新增 `docs/research-craft.md`：星标快照、来源、提炼方法、五册索引与维护方式。
+- 新增 research-craft 内容测试（五册存在/关键规则覆盖），测试总数 68 → 69。
+
 ## [0.2.1] - 2026-11-24
 
 ### Fixed / Hardened

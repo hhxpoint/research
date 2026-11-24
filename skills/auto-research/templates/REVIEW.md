@@ -1,5 +1,7 @@
 # REVIEW · 审稿意见
 
+> 审稿参考 `research-craft/references/writing.md` 第 10 节与 anti-patterns。
+
 <!-- AUTO-RESEARCH: TODO -->
 
 > 可来自 `academic-paper-reviewer` 技能，或由独立 subagent 以领域主席/魔鬼代言人身份模拟。

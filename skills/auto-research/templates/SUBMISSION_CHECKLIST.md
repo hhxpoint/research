@@ -1,5 +1,7 @@
 # SUBMISSION_CHECKLIST · 投稿前检查
 
+> 提交前再走一遍 `research-craft` 的交付前总检查。
+
 <!-- AUTO-RESEARCH: TODO -->
 
 ## Checklist

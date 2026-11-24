@@ -30,6 +30,7 @@ metadata:
 | 顶刊顶会模板：Nature/Science/Cell/NeurIPS/PLOS/NIH/NSF | `venue-templates` | LaTeX 脚手架 |
 | 指标驱动的迭代循环（改一处→机械验证→keep/revert） | `autoresearch` | 适用于代码、实验、写作等可度量目标 |
 | 从 0 到定稿的自主科研流程（选题→文献→实验→写作→审稿→定稿） | `auto-research` | 状态机 + 代码门禁 + 证据审计，可跨天恢复 |
+| 研究手艺：作图/写作/实验设计/观察/现象理解 | `research-craft` | 质量规则与反模式，按主题读 references |
 | 科研总入口（本技能） | `research-stack` | 不确定时先加载 |
 
 ## 2. 推荐流水线

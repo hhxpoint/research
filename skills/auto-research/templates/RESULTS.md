@@ -1,5 +1,7 @@
 # RESULTS · 实验结果
 
+> 观测与解释参考 `research-craft/references/experiment-observation.md` 与 `phenomenon-understanding.md`。
+
 <!-- AUTO-RESEARCH: TODO -->
 
 ## Results table
@@ -11,6 +13,12 @@
 | baseline | | | |
 
 （原始文件放在 `results/`，这里只放汇总；数字必须能回溯到原始文件。）
+
+## Observations
+
+<!-- FILL: 替换为真实内容（至少 20 个非空白字符），并删除本注释 -->
+
+观察记录：关键曲线形状、失败/异常 run、与预期的差异、值得追问的现象（先写事实，再写假设）。
 
 ## Statistical checks
 

@@ -1,5 +1,7 @@
 # EXPERIMENT_PLAN · 实验计划
 
+> 设计时参考 `research-craft/references/experiment-design.md`：claim→证据、反 claim、基线公平、预算与终止条件。
+
 <!-- AUTO-RESEARCH: TODO -->
 
 ## Baselines

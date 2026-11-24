@@ -16,6 +16,7 @@
       "citation-management",
       "deep-research",
       "experiment-plan",
+      "research-craft",
       "research-lit",
       "research-stack",
       "research-writing-skill",
@@ -27,6 +28,7 @@
     "minimal": [
       "research-stack",
       "auto-research",
+      "research-craft",
       "research-lit",
       "scientific-writing",
       "citation-management",
@@ -3107,14 +3109,14 @@
           "sha256": "0527bdd51d835d4201d61418cb038f70a8934b07888bc1e1947fb03a784e60f9"
         },
         {
-          "bytes": 8351,
+          "bytes": 9416,
           "path": "SKILL.md",
-          "sha256": "613a70a05e060c2a36f84bbc923b3390088a0e696ee2e18a1236b9fe1b6c2ebe"
+          "sha256": "8cc036f6108f756d2c29ce2da61166fe215d91a634cdb709528b9460fb7be697"
         },
         {
-          "bytes": 39830,
+          "bytes": 39905,
           "path": "scripts/auto_research.py",
-          "sha256": "fc54229d6c0b6856cb5b8581a7e9d6b9a694d04dba59902120765726c65fe1ab"
+          "sha256": "4e0792eb6089daddd8a12dfebf65321266d8eb16fe83a8249d6b787ed0f9db4b"
         },
         {
           "bytes": 1412,
@@ -3127,9 +3129,9 @@
           "sha256": "0ea258f15bc141943673ac23ac5d6e88da6cde9a2c9489c4c5d48facae71fca9"
         },
         {
-          "bytes": 1121,
+          "bytes": 1260,
           "path": "templates/EXPERIMENT_PLAN.md",
-          "sha256": "95cf642ed65b86336ba86b4322deeec601e614dee14cef9e8074f6d41c798811"
+          "sha256": "7661a3f689cc9d2db87a0b21008bcb89f1d14e3fda06d8925d36b24393290bf7"
         },
         {
           "bytes": 1041,
@@ -3142,9 +3144,9 @@
           "sha256": "c2317ec379d00486c1dc5b3e0e9eac447f107ea22247893ae8caf706e52e3894"
         },
         {
-          "bytes": 806,
+          "bytes": 912,
           "path": "templates/PAPER.md",
-          "sha256": "aa3c40bf1d34eb6583135613b2238add0b19bb36a1869105a8d6631a9c5a3c00"
+          "sha256": "41f09398bb07170c9eea5246ca1ca7456d0e480563a9c35cef13d07ca1456932"
         },
         {
           "bytes": 793,
@@ -3152,24 +3154,24 @@
           "sha256": "62a3ed6406a8bc8d36e3f206966a67c72bf695031b8c22f4a1d0c0546802019e"
         },
         {
-          "bytes": 439,
+          "bytes": 547,
           "path": "templates/REBUTTAL.md",
-          "sha256": "b845987beb58f3a950f2fd51d85876321175b00230f35aec09b62535ea4caf6d"
+          "sha256": "bb16335fda0943c864d45e0fc841d78fae003e686c6f85709d44bdb4d8c54a96"
         },
         {
-          "bytes": 787,
+          "bytes": 1149,
           "path": "templates/RESULTS.md",
-          "sha256": "549da232ee2c137740e359cbdda6d40d3f6d2d63431b26b12f2b452bcbb8212b"
+          "sha256": "2d99918da7dd962c30772484e6a05a2214b07379c0995af57bcb9a5a3825bd22"
         },
         {
-          "bytes": 650,
+          "bytes": 736,
           "path": "templates/REVIEW.md",
-          "sha256": "721567ba3e4ca166860aa6b655e07a88ac7f37b2391cadbdc625db9c778ee8ba"
+          "sha256": "dd2a3d2709a17b803edd8b6f5bd5a16fba949ad91af4aa3fe7d4709623cd934c"
         },
         {
-          "bytes": 881,
+          "bytes": 948,
           "path": "templates/SUBMISSION_CHECKLIST.md",
-          "sha256": "342764b06651004828266aa40bced3adfed54b5c73b3e8b46f724bf8bc54edf1"
+          "sha256": "53e5faf0d3861b3e03c1ee70bc49639584752633a76a6dabb53f200616971b76"
         },
         {
           "bytes": 714,
@@ -4523,6 +4525,61 @@
       "source": "aris"
     },
     {
+      "category": "methodology",
+      "description": "科研手艺总纲：从高星科研技能/方法论中提炼的硬规则与检查表，覆盖作图、写作、实验设计、实验观察、现象理解五个环节。当用户要做图、写/改论文、设计或复盘实验、观察训练/评测过程、解释结果与机制，或需要\"这个结论站不站得住\"的质量判断时加载；按任务读取对应 references。",
+      "files": [
+        {
+          "bytes": 421,
+          "path": "DSH-PORT.md",
+          "sha256": "41f30ed2288f06e077b5efd6e5b8e7dfca720ce409877b3b5d105b01001f7b87"
+        },
+        {
+          "bytes": 1065,
+          "path": "LICENSE.txt",
+          "sha256": "c205e76936f9c041c61753fa9a0672ae8a3bdf622d30193f36a96e8a9c3d71ae"
+        },
+        {
+          "bytes": 467,
+          "path": "NOTICE.md",
+          "sha256": "4d59610e80b18ffefbef020176773fa7a04e90663b58803f50463dfecc5cd36b"
+        },
+        {
+          "bytes": 8298,
+          "path": "SKILL.md",
+          "sha256": "74433d54810f8cece4029c60ed0eb26fb365c0efdd58dc60de846d340def3f30"
+        },
+        {
+          "bytes": 6298,
+          "path": "references/experiment-design.md",
+          "sha256": "df3e0c3d729112bdade0b3bb96139b3581e30d731be772503b38c8bd3b033dfa"
+        },
+        {
+          "bytes": 6259,
+          "path": "references/experiment-observation.md",
+          "sha256": "aaf5e6987053f74733df95a4696889798968775c8a5c5b74cc5950f097190559"
+        },
+        {
+          "bytes": 6646,
+          "path": "references/figures.md",
+          "sha256": "516db369142d0ecb9caa65d71444db0dd46277bf15c219993afa7f455d42d30b"
+        },
+        {
+          "bytes": 6702,
+          "path": "references/phenomenon-understanding.md",
+          "sha256": "15f657c14f9afd62b1f860d9c72155a526f2b9bf7da83c7a86f6fff96ffc8bfe"
+        },
+        {
+          "bytes": 8957,
+          "path": "references/writing.md",
+          "sha256": "2870620ddc8edaac4b15bb88f6680404f4dac3186a245580856a144c75168a92"
+        }
+      ],
+      "license": "MIT",
+      "mode": "copy",
+      "name": "research-craft",
+      "source": "local"
+    },
+    {
       "category": "research",
       "description": "Search and analyze research papers, find related work, summarize key ideas. Use when user says \"find papers\", \"related work\", \"literature review\", \"what does this paper say\", or needs to understand academic papers.",
       "files": [
@@ -4572,9 +4629,9 @@
           "sha256": "331c6f25c8c4ba145a79e912397cd270d95ccf742906a2149bef202ceec76340"
         },
         {
-          "bytes": 5462,
+          "bytes": 5600,
           "path": "SKILL.md",
-          "sha256": "f248847d30148365a8d4a734f136cfa12be068607fe0c8853e497bbee8b5a9ad"
+          "sha256": "770fed48dccfb2bd03d92de0e51910e49f079fd714f9739b3645f3ea432c049c"
         }
       ],
       "license": "MIT",

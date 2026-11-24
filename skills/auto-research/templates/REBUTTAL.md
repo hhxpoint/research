@@ -1,5 +1,7 @@
 # REBUTTAL · 逐条回复
 
+> 返修参考 `research-craft/references/writing.md` 第 10 节：逐条分类、证据与修改位置。
+
 <!-- AUTO-RESEARCH: TODO -->
 
 > 每条与 REVIEW.md 的编号一一对应；不要删除编号；需要补的实验要写清状态。
