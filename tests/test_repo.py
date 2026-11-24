@@ -64,14 +64,14 @@ class TestRepoContent(unittest.TestCase):
     def test_lock_schema_and_sources(self) -> None:
         lock = json.loads(LOCK.read_text(encoding="utf-8"))
         self.assertEqual(lock["schemaVersion"], 1)
-        self.assertEqual(len(lock["skills"]), 15)
+        self.assertEqual(len(lock["skills"]), 16)
         names = {s["name"] for s in lock["skills"]}
-        for expected in ("research-stack", "academic-paper", "autoresearch", "venue-templates"):
+        for expected in ("research-stack", "auto-research", "academic-paper", "autoresearch", "venue-templates"):
             self.assertIn(expected, names)
         for preset in ("minimal", "writing", "full"):
             self.assertIn(preset, lock["presets"])
             self.assertTrue(set(lock["presets"][preset]) <= names, preset)
-        self.assertEqual(len(lock["presets"]["full"]), 15)
+        self.assertEqual(len(lock["presets"]["full"]), 16)
         for sid, source in lock["sources"].items():
             self.assertIn("license", source, sid)
             self.assertIn("repo", source, sid)
@@ -269,18 +269,18 @@ class TestInstaller(unittest.TestCase):
     def test_install_full_and_verify(self) -> None:
         self._install("--mode", "full", "--no-backup")
         installed = sorted(p.name for p in self._skills().iterdir() if p.is_dir())
-        self.assertEqual(len(installed), 15)
+        self.assertEqual(len(installed), 16)
         self.assertIn("academic-paper", installed)
         self.assertIn("research-stack", installed)
         run("verify", "--require-all", dsh_home=self.home)
         proc = run("list", "--json", dsh_home=self.home)
         report = json.loads(proc.stdout)
-        self.assertEqual(len(report["skills"]), 15)
+        self.assertEqual(len(report["skills"]), 16)
         self.assertTrue(all(s["status"] == "ok" for s in report["skills"]))
 
     def test_installed_copies_carry_licenses(self) -> None:
         self._install("--mode", "full", "--no-backup")
-        for name in ("academic-paper", "scientific-writing", "venue-templates", "research-stack"):
+        for name in ("academic-paper", "scientific-writing", "venue-templates", "research-stack", "auto-research"):
             d = self._skills() / name
             for fname in ("NOTICE.md", "LICENSE.txt", "DSH-PORT.md"):
                 self.assertTrue((d / fname).is_file(), f"{name}: {fname}")
@@ -477,6 +477,163 @@ class TestBuildLock(unittest.TestCase):
             self.assertNotEqual(proc.returncode, 0)
             self.assertEqual(tar.read_bytes(), tar_before, "archive must not be partially rewritten")
             self.assertEqual(lock.read_bytes(), lock_before, "lock must not be partially rewritten")
+
+
+AR_TOOL = REPO / "skills" / "auto-research" / "scripts" / "auto_research.py"
+
+
+class TestAutoResearch(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmp = Path(tempfile.mkdtemp(prefix="auto-research-test-"))
+        self.dir = self.tmp / "project"
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def _run(self, *args: str, check: bool = True) -> subprocess.CompletedProcess:
+        return run_cmd([sys.executable, str(AR_TOOL), *args], check=check)
+
+    def _init(self) -> subprocess.CompletedProcess:
+        return self._run(
+            "init", str(self.dir),
+            "--title", "T", "--question", "Q", "--venue", "V",
+            "--min-refs", "2", "--min-claims", "1",
+            "--min-review-items", "1", "--min-result-files", "1",
+        )
+
+    def _write(self, rel: str, text: str) -> None:
+        target = self.dir / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding="utf-8", newline="\n")
+
+    def _fill(self, rel: str, headings: list[str]) -> None:
+        body = "# document\n\n" + "\n\n".join(f"## {h}\n\ncontent" for h in headings) + "\n"
+        self._write(rel, body)
+
+    def _advance(self, check: bool = True) -> subprocess.CompletedProcess:
+        return self._run("advance", str(self.dir), "--by", "agent", check=check)
+
+    def test_init_scaffolds_project(self) -> None:
+        self._init()
+        state = json.loads((self.dir / "state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["project"]["phase"], "ideation")
+        for rel in ("IDEA.md", "LIT_REVIEW.md", "EXPERIMENT_PLAN.md", "RESULTS.md", "PAPER.md",
+                    "REVIEW.md", "REBUTTAL.md", "SUBMISSION_CHECKLIST.md", "PROVENANCE.md",
+                    "DECISIONS.md", "evidence/citations.json", "evidence/claim_map.json"):
+            self.assertTrue((self.dir / rel).is_file(), rel)
+        proc = self._run("status", str(self.dir), "--json")
+        report = json.loads(proc.stdout)
+        self.assertEqual(report["project"]["phase"], "ideation")
+        self.assertFalse(report["gates"]["ideation"]["pass"])  # template sentinels remain
+        proc = self._run("check", str(self.dir), check=False)
+        self.assertEqual(proc.returncode, 1)
+
+    def test_init_refuses_non_empty_dir(self) -> None:
+        self.dir.mkdir(parents=True)
+        (self.dir / "keep.txt").write_text("x", encoding="utf-8")
+        proc = self._run("init", str(self.dir), "--title", "T", "--question", "Q", check=False)
+        self.assertEqual(proc.returncode, 2)
+
+    def test_advance_requires_gate(self) -> None:
+        self._init()
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)
+        state = json.loads((self.dir / "state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["project"]["phase"], "ideation")
+
+    def test_full_pipeline_until_final(self) -> None:
+        self._init()
+        headings = {
+            "IDEA.md": ["Research question", "Hypotheses", "Contribution", "Scope and risks"],
+            "LIT_REVIEW.md": ["Search strategy", "Key works", "Gap analysis"],
+            "EXPERIMENT_PLAN.md": ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"],
+            "RESULTS.md": ["Results table", "Statistical checks", "Deviations"],
+            "PAPER.md": ["Abstract", "Introduction", "Method", "Experiments", "Related work", "Limitations"],
+            "REVIEW.md": ["Summary", "Major comments", "Minor comments"],
+            "REBUTTAL.md": ["Response summary"],
+            "SUBMISSION_CHECKLIST.md": ["Checklist", "AI disclosure"],
+            "PROVENANCE.md": ["Environment", "Data", "Commands", "AI disclosure"],
+        }
+        for rel, names in headings.items():
+            self._fill(rel, names)
+        self._write("evidence/citations.json", json.dumps({"citations": [
+            {"id": "doe2026", "status": "verified"},
+            {"id": "roe2025", "status": "verified"},
+        ]}))
+        self._write("evidence/claim_map.json", json.dumps({"claims": [
+            {"id": "C1", "claim": "method improves metric", "evidence": ["results/r.txt"], "status": "verified"},
+        ]}))
+        self._write("results/r.txt", "metric,value\nours,1.0\n")
+        self._write("REVIEW.md", "# review\n\n## Summary\n\nok\n\n## Major comments\n\n### R1\n\nfix intro\n\n## Minor comments\n\ntypo\n")
+        self._write("REBUTTAL.md", "# rebuttal\n\n## Response summary\n\nthanks\n\n### R1\n\n- accepted, fixed\n")
+        self._write("SUBMISSION_CHECKLIST.md", "# checklist\n\n## Checklist\n\n- [x] citations verified\n\n## AI disclosure\n\nused assistant for editing\n")
+        self._write("PROVENANCE.md", "# provenance\n\n## Environment\npython 3.10\n\n## Data\npublic\n\n## Commands\nrun.sh\n\n## AI disclosure\nassisted\n")
+        for expected_phase in ("literature", "experiment_plan", "experiments", "writing", "review", "final"):
+            proc = self._advance()
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            state = json.loads((self.dir / "state.json").read_text(encoding="utf-8"))
+            self.assertEqual(state["project"]["phase"], expected_phase)
+        proc = self._run("check", str(self.dir))
+        self.assertIn("PASS", proc.stdout)
+
+    def test_force_requires_reason_and_is_recorded(self) -> None:
+        self._init()
+        proc = self._run("advance", str(self.dir), "--force", check=False)
+        self.assertEqual(proc.returncode, 2)
+        proc = self._run("advance", str(self.dir), "--force", "--reason", "pilot study first")
+        self.assertEqual(proc.returncode, 0)
+        decisions = (self.dir / "DECISIONS.md").read_text(encoding="utf-8")
+        self.assertIn("FORCED", decisions)
+
+    def test_advance_cannot_skip_phase(self) -> None:
+        self._init()
+        proc = self._run("advance", str(self.dir), "--to", "writing", check=False)
+        self.assertEqual(proc.returncode, 2)
+
+    def test_check_detects_unverified_citation(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("LIT_REVIEW.md", ["Search strategy", "Key works", "Gap analysis"])
+        self._write("evidence/citations.json", json.dumps({"citations": [
+            {"id": "a", "status": "verified"},
+            {"id": "b", "status": "unverified"},
+        ]}))
+        proc = self._run("check", str(self.dir), check=False)
+        self.assertEqual(proc.returncode, 1)
+        self.assertIn("verified", proc.stdout)
+        self.assertEqual(self._advance(check=False).returncode, 1)
+
+    def test_review_gate_requires_rebuttal_for_each_item(self) -> None:
+        self._init()
+        self._fill("IDEA.md", ["Research question", "Hypotheses", "Contribution", "Scope and risks"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("LIT_REVIEW.md", ["Search strategy", "Key works", "Gap analysis"])
+        self._write("evidence/citations.json", json.dumps({"citations": [
+            {"id": "a", "status": "verified"}, {"id": "b", "status": "verified"},
+        ]}))
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("EXPERIMENT_PLAN.md", ["Baselines", "Metrics", "Ablations", "Compute budget", "Success criteria"])
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("RESULTS.md", ["Results table", "Statistical checks", "Deviations"])
+        self._write("results/r.txt", "x\n")
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("PAPER.md", ["Abstract", "Introduction", "Method", "Experiments", "Related work", "Limitations"])
+        self._write("evidence/claim_map.json", json.dumps({"claims": [
+            {"id": "C1", "claim": "c", "evidence": ["results/r.txt"], "status": "verified"},
+        ]}))
+        self.assertEqual(self._advance().returncode, 0)
+        self._fill("REVIEW.md", ["Summary", "Major comments", "Minor comments"])
+        self._write("REVIEW.md", "# review\n\n## Summary\n\n## Major comments\n\n### R1\n\n## Minor comments\n\n### R2\n")
+        self._write("REBUTTAL.md", "# rebuttal\n\n## Response summary\n\n")
+        proc = self._advance(check=False)
+        self.assertEqual(proc.returncode, 1)  # R1/R2 unanswered
+
+    def test_corrupted_state_is_integrity_error(self) -> None:
+        self._init()
+        (self.dir / "state.json").write_text("{not json", encoding="utf-8")
+        proc = self._run("status", str(self.dir), check=False)
+        self.assertEqual(proc.returncode, 3)
 
 
 if __name__ == "__main__":

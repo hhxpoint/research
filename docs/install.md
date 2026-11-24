@@ -12,7 +12,7 @@
 
 ```powershell
 python tools\dsh_skills.py doctor                 # 环境/锁文件/归档/DSH 目录体检
-python tools\dsh_skills.py install --mode full    # 安装全部 15 个（有备份；事务失败自动回滚）
+python tools\dsh_skills.py install --mode full    # 安装全部 16 个（有备份；事务失败自动回滚）
 python tools\dsh_skills.py verify --require-all   # 逐文件 sha256 + frontmatter 校验
 ```
 
@@ -96,7 +96,7 @@ python tools\dsh_skills.py uninstall --names a,b,c --no-backup      # 删除且�
 
 ## 完整性模型
 
-- `manifests/skills.lock.json` 记录 15 个技能中**每个文件**的 sha256 与字节数；
+- `manifests/skills.lock.json` 记录 16 个技能中**每个文件**的 sha256 与字节数；
 - `vendor/ars-dsh-*.tar.gz` 的 sha256 也记录在锁文件 `sources.ars` 中；
 - `install` 时：先校验归档 sha256 → 解压（拒绝绝对路径/`..`/链接）→ 按锁文件校验每个技能 →
   装配到临时目录 → 再原子换入；

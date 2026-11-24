@@ -5,7 +5,7 @@
 - license: MIT
 - copyright: Copyright (c) 2026 hhxpoint
 - imported: 2026-11-23
-- packaged files: 6
+- packaged files: 7
 - uninstall: remove this directory (`~/.dsh/skills/research-stack`)
 
 ## Modifications

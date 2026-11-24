@@ -130,6 +130,7 @@ SKILL_SPECS = {
     "autoresearch": ("uditgoenka", "tooling", "copy"),
     # our own
     "research-stack": ("local", "meta", "copy"),
+    "auto-research": ("local", "auto-research", "copy"),
 }
 
 ARS_SKILLS = [n for n, s in SKILL_SPECS.items() if s[0] == "ars"]
@@ -138,6 +139,7 @@ ARS_TARBALL = VENDOR_DIR / "ars-dsh-v3.24.4-d103b100.tar.gz"
 PRESETS = {
     "minimal": [
         "research-stack",
+        "auto-research",
         "research-lit",
         "scientific-writing",
         "citation-management",

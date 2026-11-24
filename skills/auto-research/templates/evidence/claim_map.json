@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "claims": [
+    {
+      "id": "C1",
+      "claim": "",
+      "paper_section": "",
+      "evidence": [],
+      "status": "unverified"
+    }
+  ]
+}

@@ -2,6 +2,17 @@
 
 本仓库遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 与语义化版本。
 
+## [0.2.0] - 2026-11-23
+
+### Added
+
+- 新增原创技能 `auto-research`：DSH 原生自主科研状态机（7 阶段、代码级门禁、证据台账、可恢复状态、强制跳过审计）。
+  - `skills/auto-research/scripts/auto_research.py`：init / status / next / check / advance / log；纯标准库、离线可用。
+  - 14 个模板（IDEA/LIT_REVIEW/EXPERIMENT_PLAN/RESULTS/PAPER/REVIEW/REBUTTAL/清单/复现/证据台账），占位哨兵未删则门禁不通过。
+  - `docs/auto-research.md`：设计、门禁明细、自动模式与人工检查点、与 ARIS/AI-Scientist/Karpathy 方案的对应。
+- 技能总数 15 → 16；`minimal` 预设加入 `auto-research`；`research-stack` 增加 auto-research 路由。
+- CI 增加 auto-research 工具与模板的字节编译检查。
+
 ## [0.1.1] - 2026-11-23
 
 ### Fixed

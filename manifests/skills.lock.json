@@ -11,6 +11,7 @@
       "academic-paper-reviewer",
       "academic-pipeline",
       "analyze-results",
+      "auto-research",
       "autoresearch",
       "citation-management",
       "deep-research",
@@ -25,6 +26,7 @@
     ],
     "minimal": [
       "research-stack",
+      "auto-research",
       "research-lit",
       "scientific-writing",
       "citation-management",
@@ -3086,6 +3088,111 @@
       "source": "aris"
     },
     {
+      "category": "auto-research",
+      "description": "自主科研状态机：把课题从选题、文献、实验计划、实验、写作、审稿到定稿沉淀成带门禁与证据审计的项目目录，支持 agent 自动推进与人工检查点。当用户说\"开始一个课题/自动做研究/auto research/从头推进一篇论文/帮我把这个想法跑成论文\"，或需要跨天恢复研究进度、审计证据链时使用。",
+      "files": [
+        {
+          "bytes": 419,
+          "path": "DSH-PORT.md",
+          "sha256": "3ea9888bff067e188cf2bc8a1d327e9a7354e2e4b26411fcf66131fb4eb8f285"
+        },
+        {
+          "bytes": 1065,
+          "path": "LICENSE.txt",
+          "sha256": "c205e76936f9c041c61753fa9a0672ae8a3bdf622d30193f36a96e8a9c3d71ae"
+        },
+        {
+          "bytes": 466,
+          "path": "NOTICE.md",
+          "sha256": "0527bdd51d835d4201d61418cb038f70a8934b07888bc1e1947fb03a784e60f9"
+        },
+        {
+          "bytes": 6129,
+          "path": "SKILL.md",
+          "sha256": "5a60f10f75362ae770f2ac117cc593e5e76571ce8cc97e396fb3afd4d268dba1"
+        },
+        {
+          "bytes": 26874,
+          "path": "scripts/auto_research.py",
+          "sha256": "0cafae00d4b75fb6120568e5dce7851846b35c1cf662d6624fbd9692af27f124"
+        },
+        {
+          "bytes": 1412,
+          "path": "templates/AUTO-RESEARCH.md",
+          "sha256": "ae1fced8d53d887bd26dce02e467f3000cef7c13b3095ac8566fd31e9a9b514a"
+        },
+        {
+          "bytes": 122,
+          "path": "templates/DECISIONS.md",
+          "sha256": "4b304bc74a91ee6c56a440efefc58e46af5ba600c6bcc77a9dab44d5b33a232d"
+        },
+        {
+          "bytes": 656,
+          "path": "templates/EXPERIMENT_PLAN.md",
+          "sha256": "9eb3b4eb599c0e0eb07d2addd9a483f6d232fa733dd3e324cbf94866607042ca"
+        },
+        {
+          "bytes": 669,
+          "path": "templates/IDEA.md",
+          "sha256": "7e946b00ba0b44f69918decc6376f75e26fce5a82de356627990070894706fea"
+        },
+        {
+          "bytes": 536,
+          "path": "templates/LIT_REVIEW.md",
+          "sha256": "730e4c13a147c6c85e7bd60663c0e9630cdc352cdb0c00db693fdcff8bd0f937"
+        },
+        {
+          "bytes": 248,
+          "path": "templates/PAPER.md",
+          "sha256": "576a8a2b58cb0380242fb44d3b4211259db035efdc03794386be282fbc9f0450"
+        },
+        {
+          "bytes": 421,
+          "path": "templates/PROVENANCE.md",
+          "sha256": "5fbf876f1c058cb1b0463028fd6eac6e2e2b5344e33bc8279b97e2798685e45e"
+        },
+        {
+          "bytes": 346,
+          "path": "templates/REBUTTAL.md",
+          "sha256": "34533683415a690075804f99066a60415bf8b98dca7a0cc6749bcfffe6ed8223"
+        },
+        {
+          "bytes": 508,
+          "path": "templates/RESULTS.md",
+          "sha256": "3b5b79dca2c554ebd91bd8060eef2e68627be2abe3dfce71cf298359a38cdd16"
+        },
+        {
+          "bytes": 371,
+          "path": "templates/REVIEW.md",
+          "sha256": "c255fbf917222f729d5c2d21354a809c4d67fc9ffea9aafdfa4f73043db985ef"
+        },
+        {
+          "bytes": 598,
+          "path": "templates/SUBMISSION_CHECKLIST.md",
+          "sha256": "cfc1164ef9a263e26b3d7dfd1e9b1c798df783ef38df82840673d4388640b5f3"
+        },
+        {
+          "bytes": 362,
+          "path": "templates/evidence/README.md",
+          "sha256": "a85775422b55f6b8af25511f385aa54a6668aab468c463bde91bfe7de85602e8"
+        },
+        {
+          "bytes": 321,
+          "path": "templates/evidence/citations.json",
+          "sha256": "defe123c9ebeb179c083f3de298f986545cc2179242b9d28c9a4dbedf57d0bc4"
+        },
+        {
+          "bytes": 171,
+          "path": "templates/evidence/claim_map.json",
+          "sha256": "00d8444a3608c33f7d5b540451a83d44f4f6ea6c20bb4f2d210bc11d2e2de9ec"
+        }
+      ],
+      "license": "MIT",
+      "mode": "copy",
+      "name": "auto-research",
+      "source": "local"
+    },
+    {
       "category": "tooling",
       "description": "Autonomous iteration loop: modify, verify, keep/discard against any metric",
       "files": [
@@ -4452,7 +4559,7 @@
         {
           "bytes": 420,
           "path": "DSH-PORT.md",
-          "sha256": "4a27ecb02f9f98175f78d81ced6d2f6d082a32ba10fc5575bd01a45714469849"
+          "sha256": "e0d15578f8400e76fae4246f0edf8288c6471a2a45ff3bc180be5c55e5b9d5f5"
         },
         {
           "bytes": 1065,
@@ -4465,9 +4572,9 @@
           "sha256": "331c6f25c8c4ba145a79e912397cd270d95ccf742906a2149bef202ceec76340"
         },
         {
-          "bytes": 5011,
+          "bytes": 5462,
           "path": "SKILL.md",
-          "sha256": "3048d71ed14b4f824bf4faafe724ef1f9dce393439a068e49cbf00725ebcfe72"
+          "sha256": "f248847d30148365a8d4a734f136cfa12be068607fe0c8853e497bbee8b5a9ad"
         }
       ],
       "license": "MIT",

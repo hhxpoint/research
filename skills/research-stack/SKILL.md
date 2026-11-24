@@ -29,6 +29,7 @@ metadata:
 | 期刊级图表（多面板、色盲友好、导出规格） | `scientific-visualization` | matplotlib/seaborn |
 | 顶刊顶会模板：Nature/Science/Cell/NeurIPS/PLOS/NIH/NSF | `venue-templates` | LaTeX 脚手架 |
 | 指标驱动的迭代循环（改一处→机械验证→keep/revert） | `autoresearch` | 适用于代码、实验、写作等可度量目标 |
+| 从 0 到定稿的自主科研流程（选题→文献→实验→写作→审稿→定稿） | `auto-research` | 状态机 + 代码门禁 + 证据审计，可跨天恢复 |
 | 科研总入口（本技能） | `research-stack` | 不确定时先加载 |
 
 ## 2. 推荐流水线
@@ -52,7 +53,11 @@ metadata:
 2. `sr-screener` 做双盲筛选、冲突裁决与 PRISMA 计数
 3. `academic-paper` 的 `lit-review` 模式成稿
 
-### D. 可度量的迭代优化（实验/代码/内容）
+### D. 全流程自主科研（跨天、可审计）
+`auto-research`：先 `init` 建项目 → 按阶段填产物 → `check`/`advance` 过门禁；
+适合从想法到投稿的完整推进，门禁不过就补证据（详见该技能正文与 `docs/auto-research.md`）。
+
+### E. 可度量的迭代优化（实验/代码/内容）
 `autoresearch`：明确 `Metric:` 与 `Verify:` → 一次只改一处 → 先 commit 再验证 → keep/revert → TSV 记账。
 
 ## 3. DSH 使用注意

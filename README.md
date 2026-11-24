@@ -4,7 +4,7 @@
 
 [![validate](https://github.com/hhxpoint/research/actions/workflows/validate.yml/badge.svg)](https://github.com/hhxpoint/research/actions/workflows/validate.yml)
 
-- **15 个 DSH 技能**：5 件套论文流水线（ARS）+ 4 个写作/引用/图表/顶会模板（K-Dense）+ 3 个文献/实验技能（ARIS）+ 中文写作 + 指标迭代循环 + 原创科研路由技能。
+- **16 个 DSH 技能**：5 件套论文流水线（ARS）+ 4 个写作/引用/图表/顶会模板（K-Dense）+ 3 个文献/实验技能（ARIS）+ 中文写作 + 指标迭代循环 + 自主科研状态机 `auto-research` + 原创科研路由技能。
 - **离线、可校验的安装器**：不依赖网络；所有文件带 sha256；安装前校验、安装时备份、失败回滚、原子替换。
 - **明确的边界**：固定上游 commit、许可证分级（MIT / CC BY-NC 4.0）、DSH 技能规范实测文档。
 - **调研留档**：两份生态调研报告，解释为什么选这些、放弃了哪些。
@@ -21,7 +21,7 @@
 # 1) 体检（检查 Python / 锁文件 / 归档 / DSH 目录）
 python tools\dsh_skills.py doctor
 
-# 2) 安装全部 15 个技能（有备份与回滚）
+# 2) 安装全部 16 个技能（有备份与回滚）
 python tools\dsh_skills.py install --mode full
 
 # 3) 校验安装结果（逐文件 sha256 + frontmatter 规则）
@@ -63,6 +63,7 @@ python3 tools/dsh_skills.py install --mode full
 | `citation-management` | K-Dense | MIT | OpenAlex/PubMed/Google Scholar 检索、引用校验、BibTeX 生成 |
 | `scientific-visualization` | K-Dense | MIT | 期刊级图表：多面板、色盲友好、期刊导出规格 |
 | `venue-templates` | K-Dense | MIT + 内含 LPPL 1.3 资产 | Nature/Science/Cell/NeurIPS/PLOS/NIH/NSF 模板与格式规则 |
+| `auto-research` | 本仓库原创 | MIT | 自主科研状态机：选题→文献→实验→写作→审稿→定稿，带代码级门禁与证据审计 |
 | `research-lit` | ARIS | MIT | 找论文、related work、文献精读 |
 | `experiment-plan` | ARIS | MIT | claim-driven 实验计划：消融矩阵、评估协议、算力预算 |
 | `analyze-results` | ARIS | MIT | 实验结果统计、对比表、趋势与下一步实验 |
@@ -73,9 +74,9 @@ python3 tools/dsh_skills.py install --mode full
 
 | 预设 | 内容 | 适用 |
 |---|---|---|
-| `minimal` | research-stack + research-lit + scientific-writing + citation-management + research-writing-skill | 日常读写，占用量小 |
+| `minimal` | research-stack + auto-research + research-lit + scientific-writing + citation-management + research-writing-skill | 日常读写与课题推进，占用量小 |
 | `writing` | 写作与审稿相关 9 个（含 ARS 写作/审稿/编排） | 论文冲刺 |
-| `full` | 全部 15 个（默认） | 全功能 |
+| `full` | 全部 16 个（默认） | 全功能 |
 
 ```powershell
 python tools\dsh_skills.py install --mode minimal
@@ -84,6 +85,23 @@ python tools\dsh_skills.py install --mode full --exclude sr-screener,scientific-
 ```
 
 ---
+
+## Auto Research（自主科研状态机）
+
+`auto-research` 把课题做成**可恢复、可审计、带门禁**的项目目录（不是一键生成论文）：
+
+```powershell
+python tools\auto_research.py init D:\research\my-topic --title "..." --question "..." --venue "..."
+python tools\auto_research.py status D:\research\my-topic
+python tools\auto_research.py check  D:\research\my-topic
+python tools\auto_research.py advance D:\research\my-topic --by agent
+```
+
+阶段与门禁：`ideation → literature → experiment_plan → experiments → writing → review → final`。
+每个阶段有产物与代码门禁（引用必须 verified、claim 必须有证据、审稿意见必须逐条回复、清单必须勾完），
+门禁不通过就不能推进；`--force` 跳过必须写明原因并记入 `DECISIONS.md`。
+人工检查点：选题/范围变更、大算力预算、投稿、`--force`。
+详见 [docs/auto-research.md](docs/auto-research.md)。
 
 ## 安装器做了什么（稳健性设计）
 
@@ -125,6 +143,7 @@ research/
 ├─ CHANGELOG.md
 ├─ skills/                      可再分发的技能（明文目录，MIT）
 │  ├─ research-stack/           原创科研路由技能
+│  ├─ auto-research/            原创自主科研状态机（SKILL.md + scripts/auto_research.py + templates/）
 │  ├─ autoresearch/             uditgoenka 适配版（含 14 个子命令协议）
 │  ├─ research-lit/ experiment-plan/ analyze-results/       ARIS
 │  ├─ scientific-writing/ citation-management/
@@ -139,13 +158,15 @@ research/
 │  ├─ dsh_skills.py             安装 / 校验 / 卸载 / doctor / selftest
 │  ├─ build_lock.py             维护者：内存构建 + 原子写入 ARS 归档与锁文件，--check 校验自洽
 │  ├─ apply_notices.py          维护者：生成/校验 NOTICE、LICENSE、DSH-PORT 与 LPPL 披露
-│  └─ check_rebuild.py          维护者：校验干净重建的锁与提交锁语义一致（CI）
+│  ├─ check_rebuild.py          维护者：校验干净重建的锁与提交锁语义一致（CI）
+│  └─ auto_research.py          便捷入口：调用 skills/auto-research/scripts/auto_research.py
 ├─ tests/                       unittest：锁文件、归档安全、安装/校验/回滚
 ├─ scripts/install.ps1|.sh      薄封装
 ├─ docs/
 │  ├─ auto-research-skills-survey.md   自动化科研技能生态调研（2026-11-23）
 │  ├─ paper-writing-skills-survey.md   论文写作技能调研（2026-11-23）
 │  ├─ dsh-skill-spec.md                DSH 技能规范与移植指南（实测）
+│  ├─ auto-research.md                 Auto Research 状态机设计与用法
 │  ├─ install.md                       安装 / 升级 / 回滚 / 排障
 │  ├─ usage.md                         组合用法与提示词示例
 │  └─ maintenance.md                   升级上游、新增技能、发布流程
@@ -156,6 +177,7 @@ research/
 
 ## 文档
 
+- [Auto Research](docs/auto-research.md)：自主科研状态机、门禁、自动模式与人工检查点。
 - [安装与运维](docs/install.md)：`DSH_HOME` 自定义、备份恢复、卸载、常见问题。
 - [使用指南](docs/usage.md)：顶会投稿 / 中文期刊 / 系统综述 / 指标迭代四条流水线与提示词示例。
 - [DSH 技能规范](docs/dsh-skill-spec.md)：技能目录、frontmatter 规则、静默失败原因、移植检查表。
